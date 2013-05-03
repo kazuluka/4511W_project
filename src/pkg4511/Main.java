@@ -166,13 +166,13 @@ public class Main extends JPanel implements ActionListener {
                 for (int x = 0; x < img_w-1; x++){
                     pxColor = bimage1.getRGB(x,y);
                     if(Integer.toHexString(pxColor).equals("ff000000")){ //This is wall
-                        Nodes[x][y] = new Node(x,y, wall);
+                        Nodes[x][y] = new Node(x,y, NodeType.WALL);
                     }
                     if(Integer.toHexString(pxColor).equals("ffc0c0c0")){ //This is floor
-                        Nodes[x][y] = new Node(x,y, floor);
+                        Nodes[x][y] = new Node(x,y, NodeType.FLOOR);
                     }
                     if(Integer.toHexString(pxColor).equals("ffffffff")){ //This is nothing
-                        Nodes[x][y] = new Node(x,y, nothing);
+                        Nodes[x][y] = new Node(x,y, NodeType.NOTHING);
                     }
                 }
                 }
@@ -217,7 +217,7 @@ public class Main extends JPanel implements ActionListener {
                 }
                 if(addNode){
                     System.out.println("Adding a node.");
-                    possibleNodes[x][y] = new Node(x,y, possible);
+                    possibleNodes[x][y] = new Node(x,y, NodeType.POSSIBLE);
                     possibleNodes[x][y].setOri(direction);
                     addNode=false;
                 }
@@ -227,6 +227,23 @@ public class Main extends JPanel implements ActionListener {
             
             run = false;
     }
+    
+    private void findPotentialCameraLocations(){
+        String floor = "ffc0c0c0";
+        String wall = "ff000000";
+        String nothing = "ffffffff";
+        for(int x = 0; x<img_w; x++){
+            for(int y = 0; y<img_h; y++){
+                
+            }
+            
+        }
+        
+        
+        
+    }
+    
+    
     public int fixed_coverage2(int xCord, int yCord, String direction){ //this will calculate coverage for a node, given its coordinates and direction
         int covArea=0;                                                  //this is still very experimental, hence the lack of clean up
         int xLine = xCord;
