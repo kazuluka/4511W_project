@@ -43,7 +43,7 @@ public class Main extends JPanel implements ActionListener {
   public int pNodeCount=0;
   public int CameraCount=0;
   Node[][] Nodes = new Node[400][400]; //the array where the loaded image is mapped
-  Node[][] possibleNodes = new Node[400][400]; //these are possible nodes for camera placement
+//  Node[][] possibleNodes = new Node[400][400]; //these are possible nodes for camera placement
   Node[][] cameras = new Node[400][400]; //array where cameras are placed
   static private final String newline = "\n"; //Why?! --p
   Timer timer;
@@ -133,6 +133,20 @@ public class Main extends JPanel implements ActionListener {
 
             g2d.drawImage(bimage1,null,0,0);
             
+            //Drawing 'possible nodes', if they exist:
+            for(int y = 0; y < img_h; y++){
+                for(int x = 0; x < img_w; x++){
+                    if(Nodes[x][y].type==NodeType.POSSIBLE){
+                        g2d.drawLine(x,y,x,y);
+                    }
+                }
+            }
+            
+            
+            
+            
+            
+            
             img_w = bimage1.getWidth();
             img_h = bimage1.getHeight();
             }
@@ -143,8 +157,8 @@ public class Main extends JPanel implements ActionListener {
                 for (int x = 0; x < img_w-1; x++){
                     //System.out.println("x: " + x);
                     //System.out.println("y: " + y);
-                    if(possibleNodes[x][y] != null){
-                    if(possibleNodes[x][y].getOri().equals("down")){
+                    if(Nodes[x][y].type == NodeType.POSSIBLE){
+                    if(Nodes[x][y].getOri().equals("down")){
                         xRan = x;
                         yRan = y;
                         x = img_w-1;
@@ -162,8 +176,10 @@ public class Main extends JPanel implements ActionListener {
             int pxColor=0;
             if(initialScan){ //maps the loaded image to a two dimensional array
                 System.out.println("Running initial image scan.");
-                for (int y = 0; y < img_h-1; y++){
-                for (int x = 0; x < img_w-1; x++){
+                //Blank out old map data, if applicable
+                Nodes = new Node[400][400];
+                for (int y = 0; y < img_h; y++){
+                for (int x = 0; x < img_w; x++){
                     pxColor = bimage1.getRGB(x,y);
                     if(Integer.toHexString(pxColor).equals("ff000000")){ //This is wall
                         Nodes[x][y] = new Node(x,y, NodeType.WALL);
@@ -184,11 +200,19 @@ public class Main extends JPanel implements ActionListener {
             for (int x = 0; x < img_w-1; x++){
                 int rgb = bimage1.getRGB(x, y); //center
                 //System.out.println(Integer.toHexString(rgb));
-                int rgb2 = bimage1.getRGB(x+1, y);
-                int rgb3 = bimage1.getRGB(x, y+1);
-                int rgb4,rgb5;
+                int rgb2, rgb3, rgb4,rgb5;
+                
+                rgb2=0;
+                rgb3=0;
                 rgb4=0;
                 rgb5=0;
+                
+                if(x!=img_w){
+                rgb2 = bimage1.getRGB(x+1, y);
+                }
+                if(y!=img_h){
+                rgb3 = bimage1.getRGB(x, y+1);
+                }
                 if (x!=0){
                 rgb4 = bimage1.getRGB(x-1, y);
                 }
@@ -217,8 +241,8 @@ public class Main extends JPanel implements ActionListener {
                 }
                 if(addNode){
                     System.out.println("Adding a node.");
-                    possibleNodes[x][y] = new Node(x,y, NodeType.POSSIBLE);
-                    possibleNodes[x][y].setOri(direction);
+                    Nodes[x][y].setType(NodeType.POSSIBLE);
+                    Nodes[x][y].setOri(direction);
                     addNode=false;
                 }
             }
@@ -228,20 +252,35 @@ public class Main extends JPanel implements ActionListener {
             run = false;
     }
     
-    private void findPotentialCameraLocations(){
-        String floor = "ffc0c0c0";
-        String wall = "ff000000";
-        String nothing = "ffffffff";
-        for(int x = 0; x<img_w; x++){
-            for(int y = 0; y<img_h; y++){
-                
+    private void clearPossibleCameraPositions(){
+        for(int y = 0; y < img_h; y++){
+          for(int x = 0; x < img_w; x++){
+            if(Nodes[x][y].type==NodeType.POSSIBLE){
+                Nodes[x][y].setType(NodeType.FLOOR);
             }
-            
+          }
         }
         
         
         
     }
+    
+    
+    
+//    private void findPotentialCameraLocations(){
+//        String floor = "ffc0c0c0";
+//        String wall = "ff000000";
+//        String nothing = "ffffffff";
+//        for(int x = 0; x<img_w; x++){
+//            for(int y = 0; y<img_h; y++){
+//                
+//            }
+//            
+//        }
+//        
+//        
+//        
+//    }
     
     
     public int fixed_coverage2(int xCord, int yCord, String direction){ //this will calculate coverage for a node, given its coordinates and direction
@@ -369,6 +408,7 @@ public class Main extends JPanel implements ActionListener {
     if ("Clear".equals(e.getActionCommand())) {
             run = false;
             System.out.println("Clearing possible camera positions");
+            clearPossibleCameraPositions();
             repaint();
         }
   }
