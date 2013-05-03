@@ -45,7 +45,7 @@ public class Main extends JPanel implements ActionListener {
   Node[][] Nodes = new Node[400][400]; //the array where the loaded image is mapped
   Node[][] possibleNodes = new Node[400][400]; //these are possible nodes for camera placement
   Node[][] cameras = new Node[400][400]; //array where cameras are placed
-  static private final String newline = "\n";
+  static private final String newline = "\n"; //Why?! --p
   Timer timer;
   public String wall = "wall";
   public String floor = "floor";
