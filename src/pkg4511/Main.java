@@ -355,6 +355,42 @@ public class Main extends JPanel implements ActionListener {
         System.out.println("I have returned: " + covArea);
         return covArea;
     }
+    
+    public void calculateCoverage(int xPos, int yPos, int oriDeg, int fan){
+        //orient == degrees from pure right
+        //fan == number of degrees from center we're fanning out
+//        assert(orient>=0);
+//        assert(orient<(2*Math.PI));
+        assert(xPos>=0);
+        assert(xPos<img_w);
+        assert(yPos>=0);
+        assert(yPos<img_h);
+//        ArrayList<Coord> inclusiveList = 
+        for(int f = -1*fan; f<=fan; f++){
+           double orient = degToRad((oriDeg+f));
+           double xSlope = Math.cos(orient);
+           double ySlope = Math.sin(orient);
+           //By what value do we have to jump to get to the next round X value?
+           //By what value... for Y?
+           double xJump = 1.0 / xSlope;
+           double yJump = 1.0 / ySlope;
+           int xCur = xPos;
+           int yCur = yPos;
+           do{
+               Nodes[xCur][yCur].setType(NodeType.COVERED);
+               xCur
+               
+               
+               
+           }while(Nodes[xCur][yCur].type != NodeType.WALL && Nodes[xCur][yCur].type != NodeType.NOTHING);
+        }
+        
+    }
+    
+    private double degToRad(int a){
+        return (((double) a)/180.0) * Math.PI;
+    }
+    
     private int round(double d){ //rounding numbers traditionally
         double dAbs = Math.abs(d);
         int i = (int) dAbs;

@@ -8,7 +8,10 @@ package pkg4511;
  *
  * @author sever408
  */
-public enum NodeType {
-    //This defines what is contained in the Node on the map.
-    FLOOR, WALL, NOTHING, CAMERA, POSSIBLE, COVERED, UNASSIGNED
+public class Coord {
+    int x; int y;
+    public Coord(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
 }
