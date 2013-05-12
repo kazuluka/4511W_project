@@ -377,11 +377,8 @@ public class Main extends JPanel implements ActionListener {
            int xCur = xPos;
            int yCur = yPos;
            do{
-               Nodes[xCur][yCur].setType(NodeType.COVERED);
-               xCur
-               
-               
-               
+               Nodes[xCur][yCur].setType(NodeType.COVERED);              
+            
            }while(Nodes[xCur][yCur].type != NodeType.WALL && Nodes[xCur][yCur].type != NodeType.NOTHING);
         }
         
