@@ -10,5 +10,5 @@ package pkg4511;
  */
 public enum NodeType {
     //This defines what is contained in the Node on the map.
-    FLOOR, WALL, NOTHING, CAMERA, POSSIBLE, COVERED, UNASSIGNED
+    FLOOR, WALL, NOTHING, CAMERA, POSSIBLE, COVERED, UNASSIGNED, DOOR
 }
