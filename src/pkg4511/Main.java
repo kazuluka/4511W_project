@@ -33,7 +33,9 @@ import javax.swing.AbstractButton;
 import java.awt.Container;
 import java.awt.Insets;
 import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.*;
@@ -180,7 +182,7 @@ public class Main extends JPanel implements ActionListener {
                 }
             }
             
-            g2d.setColor(new Color(175,30,30));//darker red for coverage
+            g2d.setColor(new Color(125,30,30));//darker red for coverage
             
             for(int y = 0; y < img_h; y++){
                 for(int x = 0; x < img_w; x++){
@@ -308,62 +310,101 @@ public class Main extends JPanel implements ActionListener {
             
     }
     
-    private void calculatePossibleLocations(){
+//    private void calculatePossibleLocations(){
+////                    if(run){                                    //This will mark and add to possibleNodes[] nodes that can become cameras.
+//            for (int y = 0; y < img_h; y++){          //Only floor nodes that are adjacent to walls are possible.
+//            for (int x = 0; x < img_w; x++){
+//                int rgb = bimage1.getRGB(x, y); //center
+//                //System.out.println(Integer.toHexString(rgb));
+//                int rgb2, rgb3, rgb4,rgb5;
+//                
+//                rgb2=0;
+//                rgb3=0;
+//                rgb4=0;
+//                rgb5=0;
+//                
+//                if(x!=img_w-1){
+//                rgb2 = bimage1.getRGB(x+1, y);
+//                }
+//                if(y!=img_h-1){
+//                rgb3 = bimage1.getRGB(x, y+1);
+//                }
+//                if (x!=0){
+//                rgb4 = bimage1.getRGB(x-1, y);
+//                }
+//                if (y!=0){
+//                rgb5 = bimage1.getRGB(x, y-1);    
+//                }
+//                if(Integer.toHexString(rgb).equals("ffc0c0c0") && rgb4 != rgb && x!=0){ //these if statements set the orientation of the possible camera
+////                    g2d.drawLine(x,y,x,y);                                              //node depending on which side the wall is
+////                    direction = "right";
+//                    addNode=true;
+//                }
+//                if(Integer.toHexString(rgb).equals("ffc0c0c0") && rgb5 != rgb && y!=0){
+////                    g2d.drawLine(x,y,x,y);
+////                    direction = "down";
+//                    addNode=true;
+//                }
+//                if(Integer.toHexString(rgb).equals("ffc0c0c0") && rgb2 != rgb){
+////                    g2d.drawLine(x,y,x,y);
+////                    direction = "left";
+//                    addNode=true;
+//                }
+//                if(Integer.toHexString(rgb).equals("ffc0c0c0") && rgb3 != rgb){
+////                    g2d.drawLine(x,y,x,y);
+////                    direction = "up";
+//                    addNode=true;
+//                }
+//                if(addNode){
+////                    System.out.println("Adding a node.");
+//                    Nodes[x][y].setType(NodeType.POSSIBLE);
+////                    Nodes[x][y].setOri(direction);
+//                    addNode=false;
+//                }
+//            }
+//            }
+////            run = false;
+//            possibleLocationsCalculated = true;
+//    }
+    
+    
+            private void calculatePossibleLocations(){
 //                    if(run){                                    //This will mark and add to possibleNodes[] nodes that can become cameras.
-            for (int y = 0; y < img_h; y++){          //Only floor nodes that are adjacent to walls are possible.
-            for (int x = 0; x < img_w; x++){
-                int rgb = bimage1.getRGB(x, y); //center
+            for (int y = 0; y < Nodes.length; y++){          //Only floor nodes that are adjacent to walls are possible.
+            for (int x = 0; x < Nodes[y].length; x++){
+                Node evalNode = Nodes[x][y]; //center
                 //System.out.println(Integer.toHexString(rgb));
-                int rgb2, rgb3, rgb4,rgb5;
+                Node rightNode, topNode, leftNode, bottomNode;
                 
-                rgb2=0;
-                rgb3=0;
-                rgb4=0;
-                rgb5=0;
+                rightNode = new Node(0,0, NodeType.UNASSIGNED);
+                topNode = new Node(0,0, NodeType.UNASSIGNED);
+                bottomNode = new Node(0,0, NodeType.UNASSIGNED);
+                leftNode = new Node(0,0, NodeType.UNASSIGNED);
                 
-                if(x!=img_w-1){
-                rgb2 = bimage1.getRGB(x+1, y);
+                
+                if(x!=Nodes[y].length-1){
+                rightNode =Nodes[x+1][y];
                 }
-                if(y!=img_h-1){
-                rgb3 = bimage1.getRGB(x, y+1);
+                if(y!=Nodes.length-1){
+                topNode = Nodes[x][y+1];
                 }
                 if (x!=0){
-                rgb4 = bimage1.getRGB(x-1, y);
+                leftNode = Nodes[x-1][y];
                 }
                 if (y!=0){
-                rgb5 = bimage1.getRGB(x, y-1);    
+                bottomNode = Nodes[x][y-1];    
                 }
-                if(Integer.toHexString(rgb).equals("ffc0c0c0") && rgb4 != rgb && x!=0){ //these if statements set the orientation of the possible camera
-//                    g2d.drawLine(x,y,x,y);                                              //node depending on which side the wall is
-//                    direction = "right";
-                    addNode=true;
-                }
-                if(Integer.toHexString(rgb).equals("ffc0c0c0") && rgb5 != rgb && y!=0){
-//                    g2d.drawLine(x,y,x,y);
-//                    direction = "down";
-                    addNode=true;
-                }
-                if(Integer.toHexString(rgb).equals("ffc0c0c0") && rgb2 != rgb){
-//                    g2d.drawLine(x,y,x,y);
-//                    direction = "left";
-                    addNode=true;
-                }
-                if(Integer.toHexString(rgb).equals("ffc0c0c0") && rgb3 != rgb){
-//                    g2d.drawLine(x,y,x,y);
-//                    direction = "up";
-                    addNode=true;
-                }
-                if(addNode){
-                    System.out.println("Adding a node.");
+                if(evalNode.getType() == NodeType.FLOOR && ((rightNode.getType() == NodeType.WALL) ||
+                        (topNode.getType() == NodeType.WALL) || (bottomNode.getType() == NodeType.WALL)
+                        || (leftNode.getType() == NodeType.WALL) )){
                     Nodes[x][y].setType(NodeType.POSSIBLE);
-//                    Nodes[x][y].setOri(direction);
-                    addNode=false;
                 }
+
             }
             }
 //            run = false;
-            possibleLocationsCalculated = true;
     }
+    
     
     
     
@@ -409,7 +450,8 @@ public class Main extends JPanel implements ActionListener {
     
     private void placeRandomCamera(){
 //            clearCameras();//Only one random camera for now
-            calculatePossibleLocations();
+        calculatePossibleLocations();
+        while(true){
             for(int y = 0; y < img_h; y++){
                 for(int x = 0; x < img_w; x++){
                   if(Nodes[x][y].type==NodeType.POSSIBLE){
@@ -422,6 +464,7 @@ public class Main extends JPanel implements ActionListener {
                   }
                 }
               }
+        }
     }
 
     
@@ -703,6 +746,9 @@ public class Main extends JPanel implements ActionListener {
     if ("Improve".equals(e.getActionCommand())){
 //            fleshOutCoverage();
         //Send info to CameraPlacementEngine
+        System.out.printf("Number of cameras: %d\n", 
+                CameraPlacementEngine.extractCameras(Nodes).size());
+        
         CameraPlacementState newPlacement = CameraPlacementEngine.getImprovedState(Nodes, floormap);
         //Check that info gotten back is not null (null means we're at the peak)
         if(newPlacement==null){
@@ -718,6 +764,8 @@ public class Main extends JPanel implements ActionListener {
             }
         //Calculate coverage
             calculateCoverage(5);
+            System.out.printf("New number of cameras: %d\n", 
+                    CameraPlacementEngine.extractCameras(Nodes).size());
         //Show me the money
             repaint();
         }

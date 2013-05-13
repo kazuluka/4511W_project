@@ -47,6 +47,7 @@ public class CameraPlacementState {
         
         //Try all the spin possibilities:
         for(int c = 0; c < cameraLocations.size(); c++){
+            System.out.println("On rotation, camera "+c);
             for(int orient = 0; orient < 360; orient++){
                 Node newCam = cameraLocations.get(c).clone();
                 newCam.setOri(orient);
@@ -64,6 +65,7 @@ public class CameraPlacementState {
                 
                 if(challenger.getScore() > best.getScore()){
                     best = challenger;
+                    System.out.println("New best: "+best.getScore());
                 }
             }
         }
@@ -71,6 +73,7 @@ public class CameraPlacementState {
         //Try all new location possibilities:
         List<Node> possibleMoves = this.calculatePossibleLocations();
         for(int c = 0; c < cameraLocations.size(); c++){
+            System.out.println("On relocation, camera "+c);
             for(Node poss : possibleMoves){
                 Node newCam = cameraLocations.get(c).clone();
                 newCam.x = poss.x;
@@ -89,6 +92,7 @@ public class CameraPlacementState {
                 
                 if(challenger.getScore() > best.getScore()){
                     best = challenger;
+                    System.out.println("New best: "+best.getScore());
                 }
             }
         }
