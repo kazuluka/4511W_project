@@ -16,8 +16,10 @@ public class CameraPlacementEvaluator {
         double floor = getTotalFloorSpace(plans);
         
         Node[][] evalMap = new Node[400][400];
-        for(int i = 0; i < evalMap.length; i++){
-            evalMap[i] = Arrays.copyOf(plans[i], 400);
+        for(int x = 0; x < evalMap.length; x++){
+        for(int y = 0; y < evalMap[x].length; y++){
+            evalMap[x][y] = plans[x][y].clone();
+        }
         }
         
         for(Node camera : s.cameraLocations){
@@ -26,6 +28,7 @@ public class CameraPlacementEvaluator {
         }
         
         double cover = getTotalCoverageSpace(evalMap);
+        assert(((int) getTotalCoverageSpace(plans)) == 0);
         
         return (cover / floor);
     }
@@ -74,7 +77,12 @@ public class CameraPlacementEvaluator {
            int xCur = xPos;
            int yCur = yPos;
            do{
-               map[xCur][yCur].setType(NodeType.COVERED);              
+               
+               if(map[xCur][yCur].getType() != NodeType.CAMERA){
+                   //We don't want to cover the camera, but we want to continue the loop
+                   //Thus, we skip ONLY this part, not the iteration
+                   map[xCur][yCur].setType(NodeType.COVERED);  
+               }
                xAccum += xSlope;
                yAccum += ySlope;
                xCur = xPos + (int) Math.round(xAccum);

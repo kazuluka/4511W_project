@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class CameraPlacementState {
     List<Node> cameraLocations;
-    Node[][] plans;
+    final Node[][] plans;
     private double score;
     
     
@@ -40,6 +40,7 @@ public class CameraPlacementState {
     }
     
     public CameraPlacementState getBestSuccessor(){
+        this.setScore();
         //Generate a successor, test successor, keep highest-scoring successor
         CameraPlacementState best = this;
         CameraPlacementState challenger = null;

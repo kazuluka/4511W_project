@@ -33,6 +33,7 @@ import javax.swing.AbstractButton;
 import java.awt.Container;
 import java.awt.Insets;
 import java.awt.Dimension;
+import java.util.Arrays;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.*;
@@ -63,7 +64,7 @@ public class Main extends JPanel implements ActionListener {
   JButton b2 = new JButton("Scan Nodes");
   JButton b3 = new JButton("Clear"); 
   JButton b4 = new JButton("Place Random"); 
-  JButton b5 = new JButton("Refresh");
+  JButton b5 = new JButton("Improve State");
   JButton b6 = new JButton("Pathing");
   JFileChooser fc;
   File file = null;
@@ -112,7 +113,7 @@ public class Main extends JPanel implements ActionListener {
     b5.setVerticalTextPosition(AbstractButton.CENTER);
     b5.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
     b5.setMnemonic(KeyEvent.VK_D);
-    b5.setActionCommand("Refresh");
+    b5.setActionCommand("Improve");
     b5.setEnabled(true);
     add(b5);
     b6.setVerticalTextPosition(AbstractButton.CENTER);
@@ -407,7 +408,7 @@ public class Main extends JPanel implements ActionListener {
     }
     
     private void placeRandomCamera(){
-            clearCameras();//Only one random camera for now
+//            clearCameras();//Only one random camera for now
             calculatePossibleLocations();
             for(int y = 0; y < img_h; y++){
                 for(int x = 0; x < img_w; x++){
@@ -415,6 +416,7 @@ public class Main extends JPanel implements ActionListener {
                       if(4==Math.floor(Math.random()*1000)){
                           //Gives all the nodes a decent chance of being chosen
                           placeCamera(x, y, (int) Math.floor(Math.random()*365));
+                          System.out.printf("Placed camera at %d,%d\n",x,y);
                           return;//Only one camera at a time!
                       }
                   }
@@ -520,7 +522,12 @@ public class Main extends JPanel implements ActionListener {
            int xCur = xPos;
            int yCur = yPos;
            do{
-               Nodes[xCur][yCur].setType(NodeType.COVERED);              
+               if(Nodes[xCur][yCur].getType() != NodeType.CAMERA){
+                   //We don't want to cover the camera, but we want to continue the loop
+                   //Thus, we skip ONLY this part, not the iteration
+                   Nodes[xCur][yCur].setType(NodeType.COVERED);  
+               }
+            
                xAccum += xSlope;
                yAccum += ySlope;
                xCur = xPos + (int) Math.round(xAccum);
@@ -536,6 +543,18 @@ public class Main extends JPanel implements ActionListener {
 //        pauser.nextLine();
 
     }
+    
+    public void calculateCoverage(int fan){
+        //For use with a map that has all the cameras already set up
+        for(int y = 0; y < img_h; y++){
+          for(int x = 0; x < img_w; x++){
+            if(Nodes[x][y].type==NodeType.CAMERA){
+                calculateCoverage(x, y, Nodes[x][y].getOri(), fan);
+            }
+          }
+        }
+    }
+    
     
 //    private void fleshOutCoverage(){
 //                //CELLULAR AUTONOMA SCHEME:
@@ -620,6 +639,14 @@ public class Main extends JPanel implements ActionListener {
             return d < 0 ? -(i + 1) : i + 1;
         }
     }
+    
+    private void resetToFloormap(){
+        for(int x = 0; x < Nodes.length; x++){
+        for(int y = 0; y < Nodes[x].length; y++){
+            Nodes[x][y] = floormap[x][y].clone();
+        }
+        }
+    }
 
     public static void main(String[] args) { //main function, intializes the gui
 
@@ -673,9 +700,27 @@ public class Main extends JPanel implements ActionListener {
             repaint();
         }
 
-    if ("Refresh".equals(e.getActionCommand())){
+    if ("Improve".equals(e.getActionCommand())){
 //            fleshOutCoverage();
+        //Send info to CameraPlacementEngine
+        CameraPlacementState newPlacement = CameraPlacementEngine.getImprovedState(Nodes, floormap);
+        //Check that info gotten back is not null (null means we're at the peak)
+        if(newPlacement==null){
+            System.out.println("Not getting any better!");
+        }
+        else{
+        //Reset map
+            resetToFloormap();
+        //Update Nodes to reflect the new camera pattern
+            for(Node camera : newPlacement.cameraLocations){
+                Nodes[camera.x][camera.y].setType(NodeType.CAMERA);
+                Nodes[camera.x][camera.y].setOri(camera.orientation);
+            }
+        //Calculate coverage
+            calculateCoverage(5);
+        //Show me the money
             repaint();
+        }
 //            repaint();//Test to make sure stuff sticks around between 'frames'
     }
     if ("Pathing".equals(e.getActionCommand())) {
