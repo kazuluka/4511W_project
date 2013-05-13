@@ -68,12 +68,14 @@ public class Main extends JPanel implements ActionListener {
   JButton b4 = new JButton("Place Random"); 
   JButton b5 = new JButton("Improve State");
   JButton b6 = new JButton("Pathing");
+  JButton b7 = new JButton("Improve To Completion");
   JFileChooser fc;
   File file = null;
   boolean run = false;
   boolean placeRandom = false;
   boolean addNode=false;
   boolean initialScan=false;
+  boolean runCameraPlacementInitializer = false;
   BufferedImage bimage1 = null;
   Graphics g3d;
   
@@ -124,18 +126,26 @@ public class Main extends JPanel implements ActionListener {
     b6.setActionCommand("Pathing");
     b6.setEnabled(true);
     add(b6);
+    b7.setVerticalTextPosition(AbstractButton.CENTER);
+    b7.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
+    b7.setMnemonic(KeyEvent.VK_D);
+    b7.setActionCommand("ImproveComplete");
+    b7.setEnabled(true);
+    add(b7);
     b1.addActionListener(this);
     b2.addActionListener(this);
     b3.addActionListener(this);
     b4.addActionListener(this);
     b5.addActionListener(this);
     b6.addActionListener(this);
+    b7.addActionListener(this);
     b1.setBounds(10,425,80,20);
     b2.setBounds(90,425,110,20);
     b3.setBounds(200,425,110,20);
     b4.setBounds(10,445,125,20);
     b5.setBounds(135,445,125,20);
     b6.setBounds(260,445,125,20);
+    b7.setBounds(10,465,160,20);
     fc = new JFileChooser();
 
   }
@@ -697,13 +707,53 @@ public class Main extends JPanel implements ActionListener {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(new Main());
         //frame.add(rects);
-        frame.setSize(407, 500);
+        frame.setSize(407, 600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.setResizable(false);
 
 
     }
+    
+    private boolean improveState(){
+        //            fleshOutCoverage();
+        //Send info to CameraPlacementEngine
+        
+
+        
+        System.out.printf("Number of cameras: %d\n", 
+                CameraPlacementEngine.extractCameras(Nodes).size());
+        
+        CameraPlacementState newPlacement = CameraPlacementEngine.getImprovedState(Nodes, floormap);
+        if(runCameraPlacementInitializer){
+            newPlacement.initializeQuick();
+            runCameraPlacementInitializer = false;
+        }
+        
+        
+        //Check that info gotten back is not null (null means we're at the peak)
+        if(newPlacement==null){
+            System.out.println("Not getting any better!");
+            return false; //State did not improve
+        }
+        else{
+        //Reset map
+            resetToFloormap();
+        //Update Nodes to reflect the new camera pattern
+            for(Node camera : newPlacement.cameraLocations){
+                Nodes[camera.x][camera.y].setType(NodeType.CAMERA);
+                Nodes[camera.x][camera.y].setOri(camera.orientation);
+            }
+        //Calculate coverage
+            calculateCoverage(5);
+            System.out.printf("New number of cameras: %d\n", 
+                    CameraPlacementEngine.extractCameras(Nodes).size());
+        //Show me the money
+//            repaint();
+            return true;
+        }
+    }
+    
 
     public void actionPerformed(ActionEvent e) { //listener used for button calls, button presses will set off the if statement with the corresponding
         // action command
@@ -744,33 +794,19 @@ public class Main extends JPanel implements ActionListener {
         }
 
     if ("Improve".equals(e.getActionCommand())){
-//            fleshOutCoverage();
-        //Send info to CameraPlacementEngine
-        System.out.printf("Number of cameras: %d\n", 
-                CameraPlacementEngine.extractCameras(Nodes).size());
-        
-        CameraPlacementState newPlacement = CameraPlacementEngine.getImprovedState(Nodes, floormap);
-        //Check that info gotten back is not null (null means we're at the peak)
-        if(newPlacement==null){
-            System.out.println("Not getting any better!");
-        }
-        else{
-        //Reset map
-            resetToFloormap();
-        //Update Nodes to reflect the new camera pattern
-            for(Node camera : newPlacement.cameraLocations){
-                Nodes[camera.x][camera.y].setType(NodeType.CAMERA);
-                Nodes[camera.x][camera.y].setOri(camera.orientation);
-            }
-        //Calculate coverage
-            calculateCoverage(5);
-            System.out.printf("New number of cameras: %d\n", 
-                    CameraPlacementEngine.extractCameras(Nodes).size());
-        //Show me the money
-            repaint();
-        }
+        improveState();
+        repaint();
 //            repaint();//Test to make sure stuff sticks around between 'frames'
     }
+    
+    if("ImproveComplete".equals(e.getActionCommand())){
+        runCameraPlacementInitializer = true;
+        while(improveState()){
+            repaint();
+        
+        }//Oh man, that's awesome
+    }
+    
     if ("Pathing".equals(e.getActionCommand())) {
             System.out.println("Pathing: Setting up");
     }

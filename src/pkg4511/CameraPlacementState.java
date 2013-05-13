@@ -16,6 +16,9 @@ public class CameraPlacementState {
     final Node[][] plans;
     private double score;
     
+    private static int quick_onCamera = 0;
+    private static boolean quick_wrappedAround = false;
+    
     
     CameraPlacementState(final Node[][] floorplan, List<Node> cameras){
         plans = floorplan;
@@ -101,6 +104,174 @@ public class CameraPlacementState {
         }
         return best;        
     }
+    
+    
+    public CameraPlacementState getFirstBetterSuccessor(){
+        this.setScore();
+        //Generate a successor, test successor, keep highest-scoring successor
+        CameraPlacementState best = this;
+        CameraPlacementState challenger = null;
+        
+        //Try all the spin possibilities:
+        for(int c = 0; c < cameraLocations.size(); c++){
+            System.out.println("On rotation, camera "+c);
+            for(int orient = 0; orient < 360; orient++){
+                Node newCam = cameraLocations.get(c).clone();
+                newCam.setOri(orient);
+                List<Node> newCamList = new ArrayList<Node>();
+                for(int copy = 0; copy<cameraLocations.size(); copy++){
+                    if(c!=copy){
+                        newCamList.add(cameraLocations.get(copy));
+                    }
+                }
+                newCamList.add(newCam);
+                
+                challenger = new CameraPlacementState(plans, newCamList);
+                
+                challenger.setScore();
+                
+                if(challenger.getScore() > best.getScore()){
+                    best = challenger;
+                    System.out.println("New best: "+best.getScore());
+                    return best;
+                }
+            }
+        }
+        
+        //Try all new location possibilities:
+        List<Node> possibleMoves = this.calculatePossibleLocations();
+        for(int c = 0; c < cameraLocations.size(); c++){
+            System.out.println("On relocation, camera "+c);
+            for(Node poss : possibleMoves){
+                Node newCam = cameraLocations.get(c).clone();
+                newCam.x = poss.x;
+                newCam.y = poss.y;
+                List<Node> newCamList = new ArrayList<Node>();
+                for(int copy = 0; copy<cameraLocations.size(); copy++){
+                    if(c!=copy){
+                        newCamList.add(cameraLocations.get(copy));
+                    }
+                }
+                newCamList.add(newCam);
+                
+                challenger = new CameraPlacementState(plans, newCamList);
+                
+                challenger.setScore();
+                
+                if(challenger.getScore() > best.getScore()){
+                    best = challenger;
+                    System.out.println("New best: "+best.getScore());
+                    return best;
+                }
+            }
+        }
+        if(best == this){
+            return null;
+        }
+        return best; //Should never run        
+    }
+    
+    
+    private CameraPlacementState improveSingleCamera(Node camera){
+        //Motivation: We waste a lot of time calculating for cameras that are, for the moment, "complete"
+        //So, let's narrow the focus of the algorithm to one camera, so we skip unnecessary calculations
+        //We'll be using the First-Choice algorithm to optimize this camera.
+        this.setScore();
+        //Generate a successor, test successor, keep highest-scoring successor
+        CameraPlacementState best = this;
+        CameraPlacementState challenger = null;
+        
+        //Try all the spin possibilities:
+//            System.out.println("On rotation, camera "+c);
+            for(int orient = 0; orient < 360; orient++){
+                Node newCam = camera.clone();
+                newCam.setOri(orient);
+                List<Node> newCamList = new ArrayList<Node>();
+                for(int copy = 0; copy<cameraLocations.size(); copy++){
+                    if(!camera.equals(cameraLocations.get(copy))){
+                        newCamList.add(cameraLocations.get(copy));
+                    }
+                }
+                newCamList.add(newCam);
+                
+                challenger = new CameraPlacementState(plans, newCamList);
+                
+                challenger.setScore();
+                
+                if(challenger.getScore() > best.getScore()){
+                    best = challenger;
+                    System.out.println("New best: "+best.getScore());
+                    return best;
+                }
+            }
+        
+        
+        //Try all new location possibilities:
+        List<Node> possibleMoves = this.calculatePossibleLocations();
+//            System.out.println("On relocation, camera "+c);
+            for(Node poss : possibleMoves){
+                Node newCam = camera.clone();
+                newCam.x = poss.x;
+                newCam.y = poss.y;
+                List<Node> newCamList = new ArrayList<Node>();
+                for(int copy = 0; copy<cameraLocations.size(); copy++){
+                    if(!camera.equals(cameraLocations.get(copy))){
+                        newCamList.add(cameraLocations.get(copy));
+                    }
+                }
+                newCamList.add(newCam);
+                
+                challenger = new CameraPlacementState(plans, newCamList);
+                
+                challenger.setScore();
+                
+                if(challenger.getScore() > best.getScore()){
+                    best = challenger;
+                    System.out.println("New best: "+best.getScore());
+                    return best;
+                }
+            }
+        if(best == this){
+            return null;
+        }
+        return best; //Should never run
+        
+    }
+    
+    public void initializeQuick(){
+        quick_onCamera = 0;
+        quick_wrappedAround = false;
+    }
+    
+    
+    public CameraPlacementState quickGetFirstBetterSuccessor(){
+        while(true){
+            System.out.println("Evaluating camera "+quick_onCamera+", wrapped around is "+quick_wrappedAround);
+            Node currentCamera = cameraLocations.get(quick_onCamera);
+            CameraPlacementState next = improveSingleCamera(currentCamera);
+            if(next!=null){
+                quick_wrappedAround = false;//We've found something this time around,
+                //Which means we're not done yet.
+                return next;
+            }
+            else
+            {
+                //next is null. We can't improve that camera for now
+                quick_onCamera++;
+                if(quick_onCamera>=cameraLocations.size() && quick_wrappedAround){
+                    return null;//We've run out of ways to improve.
+                }
+                if(quick_onCamera>=cameraLocations.size()){
+                    quick_onCamera = 0;
+                    quick_wrappedAround = true;
+                }
+            }
+        }
+    }
+    
+    
+    
+    
     
     
     

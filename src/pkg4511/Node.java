@@ -45,4 +45,13 @@ public class Node {                      //node object
        clone.setOri(orientation);
        return clone;
    }
+   
+   @Override
+   public boolean equals(Object otherGuy){
+       Node otherNode = (Node) otherGuy;
+       
+       return ((this.x == otherNode.x) && (this.y == otherNode.y) && 
+               (this.getOri() == otherNode.getOri()) && 
+               (this.getType() == otherNode.getType()));
+   }
 }
