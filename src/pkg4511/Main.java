@@ -60,6 +60,7 @@ public class Main extends JPanel implements ActionListener {
     JButton b2 = new JButton("Scan Nodes");
     JButton b3 = new JButton("Clear");
     JButton b4 = new JButton("Place Random");
+    JButton b5 = new JButton("Pathing");
     JFileChooser fc;
     File file = null;
     boolean run = false;
@@ -100,14 +101,22 @@ public class Main extends JPanel implements ActionListener {
         b4.setActionCommand("Random");
         b4.setEnabled(true);
         add(b4);
+        b5.setVerticalTextPosition(AbstractButton.CENTER);
+        b5.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
+        b5.setMnemonic(KeyEvent.VK_D);
+        b5.setActionCommand("Pathing");
+        b5.setEnabled(true);
+        add(b5);
         b1.addActionListener(this);
         b2.addActionListener(this);
         b3.addActionListener(this);
         b4.addActionListener(this);
+        b5.addActionListener(this);
         b1.setBounds(90, 425, 80, 20);
         b2.setBounds(170, 425, 110, 20);
         b3.setBounds(280, 425, 110, 20);
         b4.setBounds(90, 445, 125, 20);
+        b5.setBounds(212, 445, 110, 20);
         fc = new JFileChooser();
 
     }
@@ -438,6 +447,10 @@ public class Main extends JPanel implements ActionListener {
             placeRandom = true;
             System.out.println("Placing a random camera");
             repaint();
+        }
+        if ("Pathing".equals(e.getActionCommand())) {
+            System.out.println("Pathfinding");
+            //repaint();
         }
         if ("Clear".equals(e.getActionCommand())) {
             run = false;
