@@ -64,6 +64,7 @@ public class Main extends JPanel implements ActionListener {
   JButton b3 = new JButton("Clear"); 
   JButton b4 = new JButton("Place Random"); 
   JButton b5 = new JButton("Refresh");
+  JButton b6 = new JButton("Pathing");
   JFileChooser fc;
   File file = null;
   boolean run = false;
@@ -114,16 +115,24 @@ public class Main extends JPanel implements ActionListener {
     b5.setActionCommand("Refresh");
     b5.setEnabled(true);
     add(b5);
+    b6.setVerticalTextPosition(AbstractButton.CENTER);
+    b6.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
+    b6.setMnemonic(KeyEvent.VK_D);
+    b6.setActionCommand("Pathing");
+    b6.setEnabled(true);
+    add(b6);
     b1.addActionListener(this);
     b2.addActionListener(this);
     b3.addActionListener(this);
     b4.addActionListener(this);
     b5.addActionListener(this);
-    b1.setBounds(90,425,80,20);
-    b2.setBounds(170,425,110,20);
-    b3.setBounds(280,425,110,20);
-    b4.setBounds(90,445,125,20);
-    b5.setBounds(220,445,125,20);
+    b6.addActionListener(this);
+    b1.setBounds(10,425,80,20);
+    b2.setBounds(90,425,110,20);
+    b3.setBounds(200,425,110,20);
+    b4.setBounds(10,445,125,20);
+    b5.setBounds(135,445,125,20);
+    b6.setBounds(260,445,125,20);
     fc = new JFileChooser();
 
   }
@@ -656,7 +665,7 @@ public class Main extends JPanel implements ActionListener {
             placeRandomCamera();
             repaint();
         }
-        if ("Clear".equals(e.getActionCommand())) {
+    if ("Clear".equals(e.getActionCommand())) {
             run = false;
             System.out.println("Clearing possible camera positions");
             clearPossibleCameraPositions();
@@ -668,6 +677,9 @@ public class Main extends JPanel implements ActionListener {
 //            fleshOutCoverage();
             repaint();
 //            repaint();//Test to make sure stuff sticks around between 'frames'
+    }
+    if ("Pathing".equals(e.getActionCommand())) {
+            System.out.println("Pathing: Setting up");
     }
     
   }
