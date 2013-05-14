@@ -18,7 +18,8 @@ public enum NodeType {
     COVERED (5), 
     UNASSIGNED (6), 
     DOOR (7), 
-    MESH (8);
+    MESH (8),
+    MESHPOINT (9);
     
     private final int index;
     

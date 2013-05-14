@@ -48,108 +48,104 @@ public class Main extends JPanel implements ActionListener {
     Node[][] floormap = new Node[400][400]; // Contains unchanging floormap data. No cameras, covered, or "possible"
     Node[][] Nodes = new Node[400][400]; //the array where the loaded image is mapped
 //  Node[][] possibleNodes = new Node[400][400]; //these are possible nodes for camera placement
-
 //  Node[][] cameras = new Node[400][400]; //array where cameras are placed
-  static private final String newline = "\n"; //Why?! --p
-  Timer timer;
-  public String wall = "wall";
-  public String floor = "floor";
-  public String nothing = "nothing";
-  public String camera = "camera";
-  public String possible = "possible";
-  //private int y = 0;
-  //private int x = 0;
-  private int img_w;
-  private int img_h;
-  private int time=1;
-  JButton b1 = new JButton("Open");
-  JButton b2 = new JButton("Scan Nodes");
-  JButton b3 = new JButton("Clear"); 
-  JButton b4 = new JButton("Place Random"); 
-  JButton b5 = new JButton("Improve State");
-  JButton b6 = new JButton("Pathing");
-  JButton b7 = new JButton("Improve To Completion");
-  JFileChooser fc;
-  File file = null;
-  boolean run = false;
-  boolean placeRandom = false;
-  boolean addNode=false;
-  boolean initialScan=false;
-  boolean runCameraPlacementInitializer = false;
-  BufferedImage bimage1 = null;
-  Graphics g3d;
-  
-  
-  boolean possibleLocationsCalculated = false; // Becomes true after Scan Nodes is run
-  
-  
-  public static void addComponentsToPane(Container pane) {
-      
-  }
-  public Main() {
-    timer = new Timer(time, this);
-    timer.start();
-    this.setLayout(null); 
-    b1.setVerticalTextPosition(AbstractButton.CENTER);                                          //CREATING BUTTONS
-    b1.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
-    b1.setMnemonic(KeyEvent.VK_D);
-    b1.setActionCommand("Open");
-    b1.setEnabled(true);
-    add(b1);
-    b2.setVerticalTextPosition(AbstractButton.CENTER);
-    b2.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
-    b2.setMnemonic(KeyEvent.VK_D);
-    b2.setActionCommand("Run");
-    b2.setEnabled(true);
-    add(b2);
-    b3.setVerticalTextPosition(AbstractButton.CENTER);
-    b3.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
-    b3.setMnemonic(KeyEvent.VK_D);
-    b3.setActionCommand("Clear");
-    b3.setEnabled(true);
-    add(b3);
-    b4.setVerticalTextPosition(AbstractButton.CENTER);
-    b4.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
-    b4.setMnemonic(KeyEvent.VK_D);
-    b4.setActionCommand("Random");
-    b4.setEnabled(true);
-    add(b4);
-    b5.setVerticalTextPosition(AbstractButton.CENTER);
-    b5.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
-    b5.setMnemonic(KeyEvent.VK_D);
-    b5.setActionCommand("Improve");
-    b5.setEnabled(true);
-    add(b5);
-    b6.setVerticalTextPosition(AbstractButton.CENTER);
-    b6.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
-    b6.setMnemonic(KeyEvent.VK_D);
-    b6.setActionCommand("Pathing");
-    b6.setEnabled(true);
-    add(b6);
-    b7.setVerticalTextPosition(AbstractButton.CENTER);
-    b7.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
-    b7.setMnemonic(KeyEvent.VK_D);
-    b7.setActionCommand("ImproveComplete");
-    b7.setEnabled(true);
-    add(b7);
-    b1.addActionListener(this);
-    b2.addActionListener(this);
-    b3.addActionListener(this);
-    b4.addActionListener(this);
-    b5.addActionListener(this);
-    b6.addActionListener(this);
-    b7.addActionListener(this);
-    b1.setBounds(10,425,80,20);
-    b2.setBounds(90,425,110,20);
-    b3.setBounds(200,425,110,20);
-    b4.setBounds(10,445,125,20);
-    b5.setBounds(135,445,125,20);
-    b6.setBounds(260,445,125,20);
-    b7.setBounds(10,465,160,20);
-    fc = new JFileChooser();
+    Node[][] pathing = new Node[400][400];
+    static private final String newline = "\n"; //Why?! --p
+    Timer timer;
+    public String wall = "wall";
+    public String floor = "floor";
+    public String nothing = "nothing";
+    public String camera = "camera";
+    public String possible = "possible";
+    //private int y = 0;
+    //private int x = 0;
+    private int img_w;
+    private int img_h;
+    private int time = 1;
+    JButton b1 = new JButton("Open");
+    JButton b2 = new JButton("Scan Nodes");
+    JButton b3 = new JButton("Clear");
+    JButton b4 = new JButton("Place Random");
+    JButton b5 = new JButton("Improve State");
+    JButton b6 = new JButton("Pathing");
+    JButton b7 = new JButton("Improve To Completion");
+    JFileChooser fc;
+    File file = null;
+    boolean run = false;
+    boolean placeRandom = false;
+    boolean addNode = false;
+    boolean initialScan = false;
+    boolean runCameraPlacementInitializer = false;
+    BufferedImage bimage1 = null;
+    Graphics g3d;
+    boolean possibleLocationsCalculated = false; // Becomes true after Scan Nodes is run
 
-  }
+    public static void addComponentsToPane(Container pane) {
+    }
 
+    public Main() {
+        timer = new Timer(time, this);
+        timer.start();
+        this.setLayout(null);
+        b1.setVerticalTextPosition(AbstractButton.CENTER);                                          //CREATING BUTTONS
+        b1.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
+        b1.setMnemonic(KeyEvent.VK_D);
+        b1.setActionCommand("Open");
+        b1.setEnabled(true);
+        add(b1);
+        b2.setVerticalTextPosition(AbstractButton.CENTER);
+        b2.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
+        b2.setMnemonic(KeyEvent.VK_D);
+        b2.setActionCommand("Run");
+        b2.setEnabled(true);
+        add(b2);
+        b3.setVerticalTextPosition(AbstractButton.CENTER);
+        b3.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
+        b3.setMnemonic(KeyEvent.VK_D);
+        b3.setActionCommand("Clear");
+        b3.setEnabled(true);
+        add(b3);
+        b4.setVerticalTextPosition(AbstractButton.CENTER);
+        b4.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
+        b4.setMnemonic(KeyEvent.VK_D);
+        b4.setActionCommand("Random");
+        b4.setEnabled(true);
+        add(b4);
+        b5.setVerticalTextPosition(AbstractButton.CENTER);
+        b5.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
+        b5.setMnemonic(KeyEvent.VK_D);
+        b5.setActionCommand("Improve");
+        b5.setEnabled(true);
+        add(b5);
+        b6.setVerticalTextPosition(AbstractButton.CENTER);
+        b6.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
+        b6.setMnemonic(KeyEvent.VK_D);
+        b6.setActionCommand("Pathing");
+        b6.setEnabled(true);
+        add(b6);
+        b7.setVerticalTextPosition(AbstractButton.CENTER);
+        b7.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
+        b7.setMnemonic(KeyEvent.VK_D);
+        b7.setActionCommand("ImproveComplete");
+        b7.setEnabled(true);
+        add(b7);
+        b1.addActionListener(this);
+        b2.addActionListener(this);
+        b3.addActionListener(this);
+        b4.addActionListener(this);
+        b5.addActionListener(this);
+        b6.addActionListener(this);
+        b7.addActionListener(this);
+        b1.setBounds(10, 425, 80, 20);
+        b2.setBounds(90, 425, 110, 20);
+        b3.setBounds(200, 425, 110, 20);
+        b4.setBounds(10, 445, 125, 20);
+        b5.setBounds(135, 445, 125, 20);
+        b6.setBounds(260, 445, 125, 20);
+        b7.setBounds(10, 465, 160, 20);
+        fc = new JFileChooser();
+
+    }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -181,33 +177,53 @@ public class Main extends JPanel implements ActionListener {
                 }
             }
 
-            
-            g2d.setColor(new Color(255,0,0));//Bright red dot for camera placement
-            
-            for(int y = 0; y < img_h; y++){
-                for(int x = 0; x < img_w; x++){
-                    if(Nodes[x][y].type==NodeType.CAMERA){
-                        g2d.drawLine(x,y,x,y);
+
+            g2d.setColor(new Color(255, 0, 0));//Bright red dot for camera placement
+
+            for (int y = 0; y < img_h; y++) {
+                for (int x = 0; x < img_w; x++) {
+                    if (Nodes[x][y].type == NodeType.CAMERA) {
+                        g2d.drawLine(x, y, x, y);
                     }
                 }
             }
-            
-            g2d.setColor(new Color(125,30,30));//darker red for coverage
-            
-            for(int y = 0; y < img_h; y++){
-                for(int x = 0; x < img_w; x++){
-                    if(Nodes[x][y].type==NodeType.COVERED){
-                        g2d.drawLine(x,y,x,y);
+
+            g2d.setColor(new Color(125, 30, 30));//darker red for coverage
+
+            for (int y = 0; y < img_h; y++) {
+                for (int x = 0; x < img_w; x++) {
+                    if (Nodes[x][y].type == NodeType.COVERED) {
+                        g2d.drawLine(x, y, x, y);
                     }
                 }
             }
-            
-            
-            
-            
+
+            g2d.setColor(new Color(251, 255, 0));//yellow - mesh point
+
+            for (int y = 0; y < img_h; y++) {
+                for (int x = 0; x < img_w; x++) {
+                    if (Nodes[x][y].type == NodeType.MESHPOINT) {
+                        g2d.drawLine(x, y, x, y);
+                    }
+                }
+            }
+
+            g2d.setColor(new Color(236, 202, 97));//golden yellow - mesh lines
+
+            for (int y = 0; y < img_h; y++) {
+                for (int x = 0; x < img_w; x++) {
+                    if (Nodes[x][y].type == NodeType.MESH) {
+                        g2d.drawLine(x, y, x, y);
+                    }
+                }
+            }
+
+
+
+
             img_w = bimage1.getWidth();
             img_h = bimage1.getHeight();
-            }
+        }
 //            if(placeRandom){ //used for testing my coverage algorithm, not really random just looks for the first downward oriented node (x+100)
 //                int xRan = 0;   //this is specific to my floormap
 //                int yRan = 0;
@@ -231,29 +247,29 @@ public class Main extends JPanel implements ActionListener {
 //                System.out.println("Coverage for this camera is: " + fixed_coverage2(xRan+100,yRan,"down") + " nodes");
 //                placeRandom=false;
 //            }
-            int pxColor=0;
-            if(initialScan){ //maps the loaded image to a two dimensional array
-                System.out.println("Running initial image scan.");
-                //Blank out old map data, if applicable
-                Nodes = new Node[400][400];
-                for (int y = 0; y < img_h; y++){
-                for (int x = 0; x < img_w; x++){
-                    pxColor = bimage1.getRGB(x,y);
-                    if(Integer.toHexString(pxColor).equals("ff000000")){ //This is wall
-                        Nodes[x][y] = new Node(x,y, NodeType.WALL);
-                        floormap[x][y] =  new Node(x,y, NodeType.WALL);
+        int pxColor = 0;
+        if (initialScan) { //maps the loaded image to a two dimensional array
+            System.out.println("Running initial image scan.");
+            //Blank out old map data, if applicable
+            Nodes = new Node[400][400];
+            for (int y = 0; y < img_h; y++) {
+                for (int x = 0; x < img_w; x++) {
+                    pxColor = bimage1.getRGB(x, y);
+                    if (Integer.toHexString(pxColor).equals("ff000000")) { //This is wall
+                        Nodes[x][y] = new Node(x, y, NodeType.WALL);
+                        floormap[x][y] = new Node(x, y, NodeType.WALL);
                     }
                     if (Integer.toHexString(pxColor).equals("ffc0c0c0")) { //This is floor
                         Nodes[x][y] = new Node(x, y, NodeType.FLOOR);
-                        floormap[x][y] =  new Node(x,y, NodeType.FLOOR);
+                        floormap[x][y] = new Node(x, y, NodeType.FLOOR);
                     }
                     if (Integer.toHexString(pxColor).equals("ffffffff")) { //This is nothing
                         Nodes[x][y] = new Node(x, y, NodeType.NOTHING);
-                        floormap[x][y] =  new Node(x,y, NodeType.NOTHING);
+                        floormap[x][y] = new Node(x, y, NodeType.NOTHING);
                     }
                     if (Integer.toHexString(pxColor).equals("ff71b84a")) { //This is door - color is green
                         Nodes[x][y] = new Node(x, y, NodeType.DOOR);
-                        floormap[x][y] =  new Node(x,y, NodeType.DOOR);
+                        floormap[x][y] = new Node(x, y, NodeType.DOOR);
                     }
                 }
             }
@@ -316,10 +332,10 @@ public class Main extends JPanel implements ActionListener {
 //            run = false;
 //            possibleLocationsCalculated = true;
 //        }
-            
-            
+
+
     }
-    
+
 //    private void calculatePossibleLocations(){
 ////                    if(run){                                    //This will mark and add to possibleNodes[] nodes that can become cameras.
 //            for (int y = 0; y < img_h; y++){          //Only floor nodes that are adjacent to walls are possible.
@@ -376,60 +392,53 @@ public class Main extends JPanel implements ActionListener {
 ////            run = false;
 //            possibleLocationsCalculated = true;
 //    }
-    
-    
-            private void calculatePossibleLocations(){
+    private void calculatePossibleLocations() {
 //                    if(run){                                    //This will mark and add to possibleNodes[] nodes that can become cameras.
-            for (int y = 0; y < Nodes.length; y++){          //Only floor nodes that are adjacent to walls are possible.
-            for (int x = 0; x < Nodes[y].length; x++){
+        for (int y = 0; y < Nodes.length; y++) {          //Only floor nodes that are adjacent to walls are possible.
+            for (int x = 0; x < Nodes[y].length; x++) {
                 Node evalNode = Nodes[x][y]; //center
                 //System.out.println(Integer.toHexString(rgb));
                 Node rightNode, topNode, leftNode, bottomNode;
-                
-                rightNode = new Node(0,0, NodeType.UNASSIGNED);
-                topNode = new Node(0,0, NodeType.UNASSIGNED);
-                bottomNode = new Node(0,0, NodeType.UNASSIGNED);
-                leftNode = new Node(0,0, NodeType.UNASSIGNED);
-                
-                
-                if(x!=Nodes[y].length-1){
-                rightNode =Nodes[x+1][y];
+
+                rightNode = new Node(0, 0, NodeType.UNASSIGNED);
+                topNode = new Node(0, 0, NodeType.UNASSIGNED);
+                bottomNode = new Node(0, 0, NodeType.UNASSIGNED);
+                leftNode = new Node(0, 0, NodeType.UNASSIGNED);
+
+
+                if (x != Nodes[y].length - 1) {
+                    rightNode = Nodes[x + 1][y];
                 }
-                if(y!=Nodes.length-1){
-                topNode = Nodes[x][y+1];
+                if (y != Nodes.length - 1) {
+                    topNode = Nodes[x][y + 1];
                 }
-                if (x!=0){
-                leftNode = Nodes[x-1][y];
+                if (x != 0) {
+                    leftNode = Nodes[x - 1][y];
                 }
-                if (y!=0){
-                bottomNode = Nodes[x][y-1];    
+                if (y != 0) {
+                    bottomNode = Nodes[x][y - 1];
                 }
-                if(evalNode.getType() == NodeType.FLOOR && ((rightNode.getType() == NodeType.WALL) ||
-                        (topNode.getType() == NodeType.WALL) || (bottomNode.getType() == NodeType.WALL)
-                        || (leftNode.getType() == NodeType.WALL) )){
+                if (evalNode.getType() == NodeType.FLOOR && ((rightNode.getType() == NodeType.WALL)
+                        || (topNode.getType() == NodeType.WALL) || (bottomNode.getType() == NodeType.WALL)
+                        || (leftNode.getType() == NodeType.WALL))) {
                     Nodes[x][y].setType(NodeType.POSSIBLE);
                 }
 
             }
-            }
+        }
 //            run = false;
     }
-    
-    
-    
-    
-    
-    private void clearPossibleCameraPositions(){
-        for(int y = 0; y < img_h; y++){
-          for(int x = 0; x < img_w; x++){
-            if(Nodes[x][y].type==NodeType.POSSIBLE){
-                Nodes[x][y].setType(NodeType.FLOOR);
+
+    private void clearPossibleCameraPositions() {
+        for (int y = 0; y < img_h; y++) {
+            for (int x = 0; x < img_w; x++) {
+                if (Nodes[x][y].type == NodeType.POSSIBLE) {
+                    Nodes[x][y].setType(NodeType.FLOOR);
+                }
             }
-        }
         }
         possibleLocationsCalculated = false;
     }
-        
 
 //    private void findPotentialCameraLocations(){
 //        String floor = "ffc0c0c0";
@@ -445,40 +454,37 @@ public class Main extends JPanel implements ActionListener {
 //        
 //        
 //    }
-    
-    public void placeCamera(int xPos, int yPos, int ori){
-        assert(xPos>=0);
-        assert(xPos<img_w);
-        assert(yPos>=0);
-        assert(yPos<img_h);
+    public void placeCamera(int xPos, int yPos, int ori) {
+        assert (xPos >= 0);
+        assert (xPos < img_w);
+        assert (yPos >= 0);
+        assert (yPos < img_h);
 //        if(possibleLocationsCalculated){
-            Nodes[xPos][yPos].setType(NodeType.CAMERA);
-            Nodes[xPos][yPos].setOri(ori);
-            calculateCoverage(xPos, yPos, ori, 5);
+        Nodes[xPos][yPos].setType(NodeType.CAMERA);
+        Nodes[xPos][yPos].setOri(ori);
+        calculateCoverage(xPos, yPos, ori, 5);
 //        }
     }
-    
-    private void placeRandomCamera(){
+
+    private void placeRandomCamera() {
 //            clearCameras();//Only one random camera for now
         calculatePossibleLocations();
-        while(true){
-            for(int y = 0; y < img_h; y++){
-                for(int x = 0; x < img_w; x++){
-                  if(Nodes[x][y].type==NodeType.POSSIBLE){
-                      if(4==Math.floor(Math.random()*1000)){
-                          //Gives all the nodes a decent chance of being chosen
-                          placeCamera(x, y, (int) Math.floor(Math.random()*365));
-                          System.out.printf("Placed camera at %d,%d\n",x,y);
-                          return;//Only one camera at a time!
-                      }
-                  }
+        while (true) {
+            for (int y = 0; y < img_h; y++) {
+                for (int x = 0; x < img_w; x++) {
+                    if (Nodes[x][y].type == NodeType.POSSIBLE) {
+                        if (4 == Math.floor(Math.random() * 1000)) {
+                            //Gives all the nodes a decent chance of being chosen
+                            placeCamera(x, y, (int) Math.floor(Math.random() * 365));
+                            System.out.printf("Placed camera at %d,%d\n", x, y);
+                            return;//Only one camera at a time!
+                        }
+                    }
                 }
-              }
+            }
         }
     }
 
-    
-    
 //    public int fixed_coverage2(int xCord, int yCord, String direction){ //this will calculate coverage for a node, given its coordinates and direction
 //        int covArea=0;                                                  //this is still very experimental, hence the lack of clean up
 //        int xLine = xCord;
@@ -551,8 +557,7 @@ public class Main extends JPanel implements ActionListener {
 //        System.out.println("I have returned: " + covArea);
 //        return covArea;
 //    }
-    
-    public void calculateCoverage(int xPos, int yPos, int oriDeg, int fan){
+    public void calculateCoverage(int xPos, int yPos, int oriDeg, int fan) {
         //orient == degrees from pure right
         //fan == number of degrees from center we're fanning out
 //        assert(orient>=0);
@@ -562,53 +567,52 @@ public class Main extends JPanel implements ActionListener {
         assert (yPos >= 0);
         assert (yPos < img_h);
 //        ArrayList<Coord> inclusiveList = 
-        for(double f = -1.0*fan; f<=fan; f+=0.1){
-           double orient = degToRad((oriDeg+f));
-           double xSlope = Math.cos(orient);
-           double ySlope = Math.sin(orient);
-           //By what value do we have to jump to get to the next round X value?
-           //By what value... for Y?
+        for (double f = -1.0 * fan; f <= fan; f += 0.1) {
+            double orient = degToRad((oriDeg + f));
+            double xSlope = Math.cos(orient);
+            double ySlope = Math.sin(orient);
+            //By what value do we have to jump to get to the next round X value?
+            //By what value... for Y?
 //           double xJump = 1.0 / xSlope;
 //           double yJump = 1.0 / ySlope;
-           double xAccum = 0.0;
-           double yAccum = 0.0;
-           int xCur = xPos;
-           int yCur = yPos;
-           do{
-               if(Nodes[xCur][yCur].getType() != NodeType.CAMERA){
-                   //We don't want to cover the camera, but we want to continue the loop
-                   //Thus, we skip ONLY this part, not the iteration
-                   Nodes[xCur][yCur].setType(NodeType.COVERED);  
-               }
-            
-               xAccum += xSlope;
-               yAccum += ySlope;
-               xCur = xPos + (int) Math.round(xAccum);
-               yCur = yPos + (int) Math.round(yAccum);
-           }while(Nodes[xCur][yCur].type != NodeType.WALL && Nodes[xCur][yCur].type != NodeType.NOTHING);
+            double xAccum = 0.0;
+            double yAccum = 0.0;
+            int xCur = xPos;
+            int yCur = yPos;
+            do {
+                if (Nodes[xCur][yCur].getType() != NodeType.CAMERA) {
+                    //We don't want to cover the camera, but we want to continue the loop
+                    //Thus, we skip ONLY this part, not the iteration
+                    Nodes[xCur][yCur].setType(NodeType.COVERED);
+                }
+
+                xAccum += xSlope;
+                yAccum += ySlope;
+                xCur = xPos + (int) Math.round(xAccum);
+                yCur = yPos + (int) Math.round(yAccum);
+            } while (Nodes[xCur][yCur].type != NodeType.WALL && Nodes[xCur][yCur].type != NodeType.NOTHING);
         }
         //Initial pass completed. Let's fill in the holes:
-        
 
-        
+
+
 //        Scanner pauser = new Scanner(System.in);
 //        System.out.println("Initial pass made...");
 //        pauser.nextLine();
 
     }
-    
-    public void calculateCoverage(int fan){
+
+    public void calculateCoverage(int fan) {
         //For use with a map that has all the cameras already set up
-        for(int y = 0; y < img_h; y++){
-          for(int x = 0; x < img_w; x++){
-            if(Nodes[x][y].type==NodeType.CAMERA){
-                calculateCoverage(x, y, Nodes[x][y].getOri(), fan);
+        for (int y = 0; y < img_h; y++) {
+            for (int x = 0; x < img_w; x++) {
+                if (Nodes[x][y].type == NodeType.CAMERA) {
+                    calculateCoverage(x, y, Nodes[x][y].getOri(), fan);
+                }
             }
-          }
         }
     }
-    
-    
+
 //    private void fleshOutCoverage(){
 //                //CELLULAR AUTONOMA SCHEME:
 //        //If >3 Nodes surrounding this one are covered, this node is also covered.
@@ -632,54 +636,49 @@ public class Main extends JPanel implements ActionListener {
 //            System.out.println("on iter" + iter++);
 //        }while(changesMade);
 //    }
-    
-    
-    
-    private int determineNodeNeighborCoverage(int xCent, int yCent){
-        int neighborsCovered = 0; 
-        for(int xDelta = -1; xDelta <= 1; xDelta++){
-        for(int yDelta = -1; yDelta <= 1; yDelta++){
-            try{
-                if(Nodes[xCent+xDelta][yCent+yDelta].type == NodeType.COVERED){
-                    neighborsCovered++;
-                    //I realize that this will count the node itself. That's fine.
+    private int determineNodeNeighborCoverage(int xCent, int yCent) {
+        int neighborsCovered = 0;
+        for (int xDelta = -1; xDelta <= 1; xDelta++) {
+            for (int yDelta = -1; yDelta <= 1; yDelta++) {
+                try {
+                    if (Nodes[xCent + xDelta][yCent + yDelta].type == NodeType.COVERED) {
+                        neighborsCovered++;
+                        //I realize that this will count the node itself. That's fine.
+                    }
+
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    //Ignore and move on
                 }
-                
-            }catch(ArrayIndexOutOfBoundsException e){
-                //Ignore and move on
             }
-        }
         }
         return neighborsCovered;
     }
-    
-    
-    public void clearCoverage(){
-       for(int y = 0; y < img_h; y++){
-          for(int x = 0; x < img_w; x++){
-            if(Nodes[x][y].type==NodeType.COVERED){
-                Nodes[x][y].setType(NodeType.FLOOR);
+
+    public void clearCoverage() {
+        for (int y = 0; y < img_h; y++) {
+            for (int x = 0; x < img_w; x++) {
+                if (Nodes[x][y].type == NodeType.COVERED) {
+                    Nodes[x][y].setType(NodeType.FLOOR);
+                }
             }
-          }
         }
-       possibleLocationsCalculated = false;//Because we cover overwrite them!
-    
+        possibleLocationsCalculated = false;//Because we cover overwrite them!
+
     }
+
     private void clearCameras() {
-        for(int y = 0; y < img_h; y++){
-          for(int x = 0; x < img_w; x++){
-            if(Nodes[x][y].type==NodeType.CAMERA){
-                Nodes[x][y].setType(NodeType.FLOOR);
+        for (int y = 0; y < img_h; y++) {
+            for (int x = 0; x < img_w; x++) {
+                if (Nodes[x][y].type == NodeType.CAMERA) {
+                    Nodes[x][y].setType(NodeType.FLOOR);
+                }
             }
-          }
         }
         clearCoverage();
     }
-    
-    
-    
-    private double degToRad(double a){
-        return (((double) a)/180.0) * Math.PI;
+
+    private double degToRad(double a) {
+        return (((double) a) / 180.0) * Math.PI;
     }
 
     private int round(double d) { //rounding numbers traditionally
@@ -692,12 +691,12 @@ public class Main extends JPanel implements ActionListener {
             return d < 0 ? -(i + 1) : i + 1;
         }
     }
-    
-    private void resetToFloormap(){
-        for(int x = 0; x < Nodes.length; x++){
-        for(int y = 0; y < Nodes[x].length; y++){
-            Nodes[x][y] = floormap[x][y].clone();
-        }
+
+    private void resetToFloormap() {
+        for (int x = 0; x < Nodes.length; x++) {
+            for (int y = 0; y < Nodes[x].length; y++) {
+                Nodes[x][y] = floormap[x][y].clone();
+            }
         }
     }
 
@@ -714,49 +713,47 @@ public class Main extends JPanel implements ActionListener {
 
 
     }
-    
-    private boolean improveState(){
+
+    private boolean improveState() {
         //            fleshOutCoverage();
         //Send info to CameraPlacementEngine
-        
 
-        
-        System.out.printf("Number of cameras: %d\n", 
+
+
+        System.out.printf("Number of cameras: %d\n",
                 CameraPlacementEngine.extractCameras(Nodes).size());
-        
-        if(runCameraPlacementInitializer){
+
+        if (runCameraPlacementInitializer) {
             (new CameraPlacementState(new Node[0][0], null)).initializeQuick();//File under: things I'll burn in Hell for
             runCameraPlacementInitializer = false;
         }
-        
-        
+
+
         CameraPlacementState newPlacement = CameraPlacementEngine.getImprovedState(Nodes, floormap);
-        
-        
-        
+
+
+
         //Check that info gotten back is not null (null means we're at the peak)
-        if(newPlacement==null){
+        if (newPlacement == null) {
             System.out.println("Not getting any better!");
             return false; //State did not improve
-        }
-        else{
-        //Reset map
+        } else {
+            //Reset map
             resetToFloormap();
-        //Update Nodes to reflect the new camera pattern
-            for(Node camera : newPlacement.cameraLocations){
+            //Update Nodes to reflect the new camera pattern
+            for (Node camera : newPlacement.cameraLocations) {
                 Nodes[camera.x][camera.y].setType(NodeType.CAMERA);
                 Nodes[camera.x][camera.y].setOri(camera.orientation);
             }
-        //Calculate coverage
+            //Calculate coverage
             calculateCoverage(5);
-            System.out.printf("New number of cameras: %d\n", 
+            System.out.printf("New number of cameras: %d\n",
                     CameraPlacementEngine.extractCameras(Nodes).size());
-        //Show me the money
+            //Show me the money
 //            repaint();
             return true;
         }
     }
-    
 
     public void actionPerformed(ActionEvent e) { //listener used for button calls, button presses will set off the if statement with the corresponding
         // action command
@@ -782,13 +779,13 @@ public class Main extends JPanel implements ActionListener {
 //            repaint();//Let's get that color up!
         }
 
-    if ("Random".equals(e.getActionCommand())) {
+        if ("Random".equals(e.getActionCommand())) {
 //            placeRandom = true;
             System.out.println("Placing a random camera");
             placeRandomCamera();
             repaint();
         }
-    if ("Clear".equals(e.getActionCommand())) {
+        if ("Clear".equals(e.getActionCommand())) {
             run = false;
             System.out.println("Clearing possible camera positions");
             clearPossibleCameraPositions();
@@ -796,24 +793,25 @@ public class Main extends JPanel implements ActionListener {
             repaint();
         }
 
-    if ("Improve".equals(e.getActionCommand())){
-        improveState();
-        repaint();
-//            repaint();//Test to make sure stuff sticks around between 'frames'
-    }
-    
-    if("ImproveComplete".equals(e.getActionCommand())){
-        runCameraPlacementInitializer = true;
-        while(improveState()){
+        if ("Improve".equals(e.getActionCommand())) {
+            improveState();
             repaint();
-        
-        }//Oh man, that's awesome
-    }
-    
-    if ("Pathing".equals(e.getActionCommand())) {
-            System.out.println("Pathing: Setting up");
-    }
-    
-  }
+//            repaint();//Test to make sure stuff sticks around between 'frames'
+        }
 
+        if ("ImproveComplete".equals(e.getActionCommand())) {
+            runCameraPlacementInitializer = true;
+            while (improveState()) {
+                repaint();
+
+            }//Oh man, that's awesome
+        }
+
+        if ("Pathing".equals(e.getActionCommand())) {
+            System.out.println("Pathing: Setting up");
+            PathFinding pathFinding = new PathFinding(Nodes);
+            pathFinding.createMeshPoints();
+        }
+
+    }
 }

@@ -4,24 +4,33 @@
  */
 package pkg4511;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Jess
  */
 class MeshPoint {
-    Node startPoint, endPoint;
-    float distance = Integer.MAX_VALUE;
+    Node currentNode;
+    ArrayList<MeshOption> options = new ArrayList(10);
+    int[][] direction = new int[3][3]; // left, right, top, bottom, br,bl,tl,tr
     
-    public MeshPoint(Node s, Node e){
-        startPoint = s;
-        endPoint = e;
-        distance = getDistance();
+    public MeshPoint(Node c, int[][] allowedDirections){
+        int i=0;
+        currentNode = c;
+        direction  = allowedDirections;
+        
     }
     
-    public float getDistance(){
-        int a = startPoint.x-endPoint.x;
-        int b = startPoint.y-endPoint.y;
-        return (float)Math.sqrt(a*a + b*b);
+    public boolean canTravelD(int i, int k){
+        if (direction[i][k]==0);{ //0 - no wall
+           return true;
+        }
+    }
+
+    public void addOption(Node a){
+        MeshOption newOption = new MeshOption(currentNode, a);
+        options.add(newOption);
     }
     
 }

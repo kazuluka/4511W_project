@@ -4,6 +4,7 @@
  */
 package pkg4511;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -26,7 +27,7 @@ public class MeshPointEvaluator {
     
     Node[][] toCheck = new Node[3][3];
     int[][] intToCheck = new int[3][3];
-    Node meshPoint = null;
+    MeshPoint meshPoint = null;    
     
     public MeshPointEvaluator(){}
     
@@ -37,34 +38,52 @@ public class MeshPointEvaluator {
     }
 
     public void translateToCheck(){
+        NodeType toCheckType;
         for(int i=0; i<3;i++){
             for(int k = 0; k<3;k++){
-                intToCheck[i][k] = toCheck[i][k].type.WALL.index();
+                toCheckType = toCheck[i][k].type;
+                if((toCheckType==NodeType.WALL) || (toCheckType == NodeType.DOOR)){
+                    intToCheck[i][k] = 1;
+                }else if(toCheckType == NodeType.FLOOR){
+                    intToCheck[i][k] = 0;
+                }else{
+                    intToCheck[i][k] = -1;
+                }
             }
         }
     }
     
     public void meshPoint(){
+        // <editor-fold defaultstate="collapsed" desc="Outside Corners">        
         if(Arrays.deepEquals(checkNodesTR, intToCheck)){
-            meshPoint = toCheck[2][0];
+            meshPoint = new MeshPoint(toCheck[2][0], checkNodesTR);
         }
         if(Arrays.deepEquals(checkNodesTL, intToCheck)){
-            meshPoint = toCheck[0][0];
+            meshPoint = new MeshPoint(toCheck[0][0], checkNodesTL);
         }
         if(Arrays.deepEquals(checkNodesBL, intToCheck)){
-            meshPoint = toCheck[0][2];
+            meshPoint = new MeshPoint(toCheck[0][2], checkNodesBL);
         }
         
         if(Arrays.deepEquals(checkNodesBR, intToCheck)){
-            meshPoint = toCheck[2][2];
+            meshPoint = new MeshPoint(toCheck[2][2], checkNodesBR);
         }
-        //Middle point is meshPoint
-        if((Arrays.deepEquals(checkNodesM1, intToCheck))||
-                (Arrays.deepEquals(checkNodesM2, intToCheck))||
-                (Arrays.deepEquals(checkNodesM3, intToCheck))|
-                (Arrays.deepEquals(checkNodesM4, intToCheck))){
-            meshPoint = toCheck[1][1];
+        //</editor-fold>
+        
+        // <editor-fold defaultstate="collapsed" desc="Middle points">
+        if(Arrays.deepEquals(checkNodesM1, intToCheck)){
+            meshPoint = new MeshPoint(toCheck[2][2], checkNodesM1);
         }        
+        if(Arrays.deepEquals(checkNodesM2, intToCheck)){
+            meshPoint = new MeshPoint(toCheck[2][2], checkNodesM2);
+        }     
+        if(Arrays.deepEquals(checkNodesM3, intToCheck)){            
+            meshPoint = new MeshPoint(toCheck[2][2], checkNodesM3);
+        }     
+        if(Arrays.deepEquals(checkNodesM4, intToCheck)){
+            meshPoint = new MeshPoint(toCheck[2][2], checkNodesM4);
+        }
+        //</editor-fold>
     }
     
     public boolean isMeshPointSet(){
@@ -74,7 +93,7 @@ public class MeshPointEvaluator {
         return true;
     }
     
-    public Node getMeshPoint(){
+    public MeshPoint getMeshPoint(){
         return meshPoint;
     }
 }
