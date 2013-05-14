@@ -208,16 +208,6 @@ public class Main extends JPanel implements ActionListener {
             
             
            if(pathFind!=null){
-            g2d.setColor(new Color(251, 255, 0));//yellow - mesh point
-
-            for (int y = 0; y < img_h; y++) {
-                for (int x = 0; x < img_w; x++) {
-                    if (Nodes[x][y].type == NodeType.MESHPOINT) {
-                        g2d.drawLine(x, y, x, y);
-                    }
-                }
-            }
-
             g2d.setColor(new Color(236, 202, 97));//golden yellow - mesh lines
             //Iterator<MeshOption> itr = pathFind.options.iterator();
             //MeshOption o;
@@ -231,6 +221,16 @@ public class Main extends JPanel implements ActionListener {
                     g2d.drawLine(o.startPoint.x, o.startPoint.y, o.endPoint.x, o.endPoint.y);
                 }
             }
+            
+            g2d.setColor(new Color(251, 255, 0));//yellow - mesh point
+
+            for (int y = 0; y < img_h; y++) {
+                for (int x = 0; x < img_w; x++) {
+                    if (Nodes[x][y].type == NodeType.MESHPOINT) {
+                        g2d.drawLine(x, y, x, y);
+                    }
+                }
+            }
            }
 
 
@@ -238,6 +238,8 @@ public class Main extends JPanel implements ActionListener {
             img_w = bimage1.getWidth();
             img_h = bimage1.getHeight();
         }
+        
+        //<editor-fold defaultstate="collapsed" desc="Commented out code">
 //            if(placeRandom){ //used for testing my coverage algorithm, not really random just looks for the first downward oriented node (x+100)
 //                int xRan = 0;   //this is specific to my floormap
 //                int yRan = 0;
@@ -261,6 +263,8 @@ public class Main extends JPanel implements ActionListener {
 //                System.out.println("Coverage for this camera is: " + fixed_coverage2(xRan+100,yRan,"down") + " nodes");
 //                placeRandom=false;
 //            }
+        //</editor-fold>
+        
         int pxColor = 0;
         if (initialScan) { //maps the loaded image to a two dimensional array
             System.out.println("Running initial image scan.");
@@ -290,7 +294,7 @@ public class Main extends JPanel implements ActionListener {
             initialScan = false;
         }
         String direction = "";
-
+//<editor-fold defaultstate="collapsed" desc="Commented out code">
 //            if(run){                                    //This will mark and add to possibleNodes[] nodes that can become cameras.
 //            for (int y = 0; y < img_h; y++){          //Only floor nodes that are adjacent to walls are possible.
 //            for (int x = 0; x < img_w; x++){
@@ -346,10 +350,10 @@ public class Main extends JPanel implements ActionListener {
 //            run = false;
 //            possibleLocationsCalculated = true;
 //        }
-
-
+//</editor-fold>
     }
-
+    
+//<editor-fold defaultstate="collapsed" desc="Commented out code">
 //    private void calculatePossibleLocations(){
 ////                    if(run){                                    //This will mark and add to possibleNodes[] nodes that can become cameras.
 //            for (int y = 0; y < img_h; y++){          //Only floor nodes that are adjacent to walls are possible.
@@ -406,6 +410,9 @@ public class Main extends JPanel implements ActionListener {
 ////            run = false;
 //            possibleLocationsCalculated = true;
 //    }
+////</editor-fold>  
+    
+    //<editor-fold defaultstate="collapsed" desc="=========== Camera Methods ===========">
     private void calculatePossibleLocations() {
 //                    if(run){                                    //This will mark and add to possibleNodes[] nodes that can become cameras.
         for (int y = 0; y < Nodes.length; y++) {          //Only floor nodes that are adjacent to walls are possible.
@@ -453,7 +460,8 @@ public class Main extends JPanel implements ActionListener {
         }
         possibleLocationsCalculated = false;
     }
-
+    
+//<editor-fold defaultstate="collapsed" desc="Commented out code">
 //    private void findPotentialCameraLocations(){
 //        String floor = "ffc0c0c0";
 //        String wall = "ff000000";
@@ -468,6 +476,8 @@ public class Main extends JPanel implements ActionListener {
 //        
 //        
 //    }
+    //</editor-fold>
+    
     public void placeCamera(int xPos, int yPos, int ori) {
         assert (xPos >= 0);
         assert (xPos < img_w);
@@ -498,7 +508,8 @@ public class Main extends JPanel implements ActionListener {
             }
         }
     }
-
+    
+//<editor-fold defaultstate="collapsed" desc="Commented out code">
 //    public int fixed_coverage2(int xCord, int yCord, String direction){ //this will calculate coverage for a node, given its coordinates and direction
 //        int covArea=0;                                                  //this is still very experimental, hence the lack of clean up
 //        int xLine = xCord;
@@ -571,6 +582,8 @@ public class Main extends JPanel implements ActionListener {
 //        System.out.println("I have returned: " + covArea);
 //        return covArea;
 //    }
+    //</editor-fold>
+    
     public void calculateCoverage(int xPos, int yPos, int oriDeg, int fan) {
         //orient == degrees from pure right
         //fan == number of degrees from center we're fanning out
@@ -626,7 +639,7 @@ public class Main extends JPanel implements ActionListener {
             }
         }
     }
-
+//<editor-fold defaultstate="collapsed" desc="Commented out code">
 //    private void fleshOutCoverage(){
 //                //CELLULAR AUTONOMA SCHEME:
 //        //If >3 Nodes surrounding this one are covered, this node is also covered.
@@ -650,6 +663,8 @@ public class Main extends JPanel implements ActionListener {
 //            System.out.println("on iter" + iter++);
 //        }while(changesMade);
 //    }
+    //</editor-fold>
+    
     private int determineNodeNeighborCoverage(int xCent, int yCent) {
         int neighborsCovered = 0;
         for (int xDelta = -1; xDelta <= 1; xDelta++) {
@@ -705,29 +720,7 @@ public class Main extends JPanel implements ActionListener {
             return d < 0 ? -(i + 1) : i + 1;
         }
     }
-
-    private void resetToFloormap() {
-        for (int x = 0; x < Nodes.length; x++) {
-            for (int y = 0; y < Nodes[x].length; y++) {
-                Nodes[x][y] = floormap[x][y].clone();
-            }
-        }
-    }
-
-    public static void main(String[] args) { //main function, intializes the gui
-
-        JFrame frame = new JFrame("Security Coverage");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(new Main());
-        //frame.add(rects);
-        frame.setSize(407, 600);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        frame.setResizable(false);
-
-
-    }
-
+    
     private boolean improveState() {
         //            fleshOutCoverage();
         //Send info to CameraPlacementEngine
@@ -769,7 +762,32 @@ public class Main extends JPanel implements ActionListener {
         }
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Path methods"> 
+    //</editor-fold>
+
+    private void resetToFloormap() {
+        for (int x = 0; x < Nodes.length; x++) {
+            for (int y = 0; y < Nodes[x].length; y++) {
+                Nodes[x][y] = floormap[x][y].clone();
+            }
+        }
+    }
+
+    public static void main(String[] args) { //main function, intializes the gui
+
+        JFrame frame = new JFrame("Security Coverage");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(new Main());
+        //frame.add(rects);
+        frame.setSize(407, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        frame.setResizable(false);
+
+
+    }
+
+
+    //<editor-fold defaultstate="collapsed" desc="============ Path methods ============"> 
     private void createPathMesh(){
         pathFind = new PathFinding(Nodes);
         pathFind.createMeshPoints();
