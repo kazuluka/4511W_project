@@ -82,6 +82,7 @@ public class Main extends JPanel implements ActionListener {
     //<editor-fold defaultstate="collapsed" desc="Path Variables">
     Node[][] pathing = new Node[400][400];
     ArrayList<MeshPoint> mesh = new ArrayList();
+    PathFinding pathFind = null;
     //</editor-fold>
     
     
@@ -203,7 +204,9 @@ public class Main extends JPanel implements ActionListener {
                     }
                 }
             }
-
+            
+            
+           if(pathFind!=null){
             g2d.setColor(new Color(251, 255, 0));//yellow - mesh point
 
             for (int y = 0; y < img_h; y++) {
@@ -215,15 +218,10 @@ public class Main extends JPanel implements ActionListener {
             }
 
             g2d.setColor(new Color(236, 202, 97));//golden yellow - mesh lines
-
-            for (int y = 0; y < img_h; y++) {
-                for (int x = 0; x < img_w; x++) {
-                    if (Nodes[x][y].type == NodeType.MESH) {
-                        g2d.drawLine(x, y, x, y);
-                    }
-                }
+            for(MeshOption o : pathFind.options){
+                g2d.drawLine(o.startPoint.x, o.startPoint.y, o.endPoint.x, o.endPoint.y);
             }
-
+           }
 
 
 
@@ -763,9 +761,9 @@ public class Main extends JPanel implements ActionListener {
 
     //<editor-fold defaultstate="collapsed" desc="Path methods"> 
     private void createPathMesh(){
-        PathFinding pathFinding = new PathFinding(Nodes);
-        pathFinding.createMeshPoints();
-        mesh = pathFinding.getMesh();
+        pathFind = new PathFinding(Nodes);
+        pathFind.createMeshPoints();
+        mesh = pathFind.getMesh();
         int x=0;
         int y=0;
         for(MeshPoint p: mesh){
@@ -773,7 +771,6 @@ public class Main extends JPanel implements ActionListener {
             y = p.currentNode.y;
             Nodes[x][y].setType(NodeType.MESHPOINT);
         }
-        System.out.println(mesh.size());
     }    
     
     private void clearPaths() {

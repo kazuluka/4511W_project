@@ -13,12 +13,14 @@ import java.util.ArrayList;
 class MeshPoint {
     Node currentNode;
     ArrayList<MeshOption> options = new ArrayList(10);
+    String position;
     int[][] direction = new int[3][3]; // left, right, top, bottom, br,bl,tl,tr
     
-    public MeshPoint(Node c, int[][] allowedDirections){
+    public MeshPoint(Node c, int[][] allowedDirections, String p){
         int i=0;
         currentNode = c;
         direction  = allowedDirections;
+        position = p;
         
     }
     

@@ -4,7 +4,8 @@
  */
 package pkg4511;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  *
@@ -14,6 +15,7 @@ public class PathFinding {
     Node[][] floormap = new Node[400][400]; // Contains unchanging floormap data. No cameras, covered, or "possible"
     ArrayList<Node> path = new ArrayList(4000); //array for painting given paths
     ArrayList<MeshPoint> mesh = new ArrayList();
+    ArrayList<MeshOption> options = new ArrayList();
     
     public PathFinding(Node[][] processedFloor){
         floormap = processedFloor;
@@ -22,7 +24,7 @@ public class PathFinding {
     public void createMeshPoints(){
         Node[][] checkNodes  = new Node[3][3];
         MeshPointEvaluator test;
-        int count = 0;
+        //int count = 0;
         for(int i = 0; i< floormap.length-1; i++){
             for(int j = 0; j < floormap[i].length-1;j++){
                 
@@ -53,14 +55,124 @@ public class PathFinding {
                     checkNodes[2][2] = floormap[i][j];
                     test = new MeshPointEvaluator(checkNodes); 
                     if(test.isMeshPointSet()){
-                        count++;                        
-                        System.out.println("Count: "+count);
+                        //count++;                        
+                       // System.out.println("Count: "+count);
                         mesh.add(test.getMeshPoint());
                     }                
                 }             
             }
         }
+        //TODO:fix connections - looks like I am looping through a lot of nodes I shouldn't
+        //makeMeshPointConnections();
     }
+    
+    
+    //checking for connections between MeshPoints in our newly created mesh ArrayList
+    public void makeMeshPointConnections(){
+        System.out.println("Inside makeMeshPointConnections");
+        boolean[] checked = new boolean[mesh.size()];
+        Arrays.fill(checked, false);
+        int count = 0;
+        for(MeshPoint m : mesh){
+            if(!checked[count]){
+                for(int i = count+1; i<mesh.size();i++){                    
+                    MeshPoint p = mesh.get(i);
+                    if(straitWalk(m, mesh.get(i))){
+                        System.out.println("Should be adding connections");
+                        m.addOption(p.currentNode);
+                        p.addOption(m.currentNode);
+                        checked[i]=true;
+                    }
+                }
+            }
+        checked[count]=true;
+        count++;
+        }        
+    }
+    
+    private float distance(MeshPoint m, MeshPoint p){
+        int mx = m.currentNode.x;
+        int my = m.currentNode.y;
+        int px = p.currentNode.x;
+        int py = p.currentNode.y;
+        float a = mx-px;
+        float b = my-py;
+        float c = (float)Math.sqrt(a*a + b*b);
+        return c;
+    }
+    
+    //checks if there is a strait line walk from point m to point p
+    private boolean straitWalk(MeshPoint m, MeshPoint p){
+        System.out.println("checking how often I am here");
+        boolean canWalk = false;
+        float c = distance(m,p);
+        int mx = m.currentNode.x;
+        int my = m.currentNode.y;
+        int px = p.currentNode.x;
+        int py = p.currentNode.y;
+        MeshPoint currentWinner = m;
+        // <editor-fold defaultstate="collapsed" desc="Switch">
+        switch (m.position){
+            case("BR"):
+                options.add(new MeshOption(m.currentNode, floormap[mx-1][my]));
+                options.add(new MeshOption(m.currentNode, floormap[mx-1][my+1]));
+                options.add(new MeshOption(m.currentNode, floormap[mx+1][my]));
+               options.add(new MeshOption(m.currentNode, floormap[mx+1][my+1]));                
+            case("M1"):
+                options.add(new MeshOption(m.currentNode, floormap[mx+1][my]));
+                options.add(new MeshOption(m.currentNode, floormap[mx][my+1]));
+                options.add(new MeshOption(m.currentNode, floormap[mx+1][my+1]));
+                break;
+            case("BL"):
+                options.add(new MeshOption(m.currentNode, floormap[mx-1][my]));
+                options.add(new MeshOption(m.currentNode, floormap[mx-1][my-1]));
+                options.add(new MeshOption(m.currentNode, floormap[mx][my+1]));
+                options.add(new MeshOption(m.currentNode, floormap[mx+1][my+1]));
+            case("M2"):
+                options.add(new MeshOption(m.currentNode, floormap[mx+1][my]));
+                options.add(new MeshOption(m.currentNode, floormap[mx][my-1]));
+                options.add(new MeshOption(m.currentNode, floormap[mx+1][my-1]));
+                break;
+            case("TL"):
+                options.add(new MeshOption(m.currentNode, floormap[mx+1][my]));
+                options.add(new MeshOption(m.currentNode, floormap[mx+1][my]));
+                options.add(new MeshOption(m.currentNode, floormap[mx][my+1]));
+                options.add(new MeshOption(m.currentNode, floormap[mx-1][my+1]));
+            case("M4"):
+                options.add(new MeshOption(m.currentNode, floormap[mx-1][my]));
+                options.add(new MeshOption(m.currentNode, floormap[mx][my-1]));
+                options.add(new MeshOption(m.currentNode, floormap[mx-1][my-1]));
+                break;
+            case("TR"):
+                options.add(new MeshOption(m.currentNode, floormap[mx][my-1]));
+                options.add(new MeshOption(m.currentNode, floormap[mx-1][my-1]));
+                options.add(new MeshOption(m.currentNode, floormap[mx+1][my]));
+                options.add(new MeshOption(m.currentNode, floormap[mx+1][my+1]));
+            case("M3"):
+                options.add(new MeshOption(m.currentNode, floormap[mx-1][my]));
+                options.add(new MeshOption(m.currentNode, floormap[mx-1][my+1]));
+                options.add(new MeshOption(m.currentNode, floormap[mx][my+1]));
+                break;
+            }
+        //</editor-fold>
+        Iterator<MeshOption> itr = options.iterator();
+        while(itr.hasNext()){
+            MeshOption mo = itr.next();
+            if(c>mo.getDistance()){
+                c = mo.getDistance();                
+                currentWinner = new MeshPoint(mo.endPoint, m.direction, m.position);
+            }
+        }
+        if((currentWinner.currentNode.type==NodeType.FLOOR) && (currentWinner != p || currentWinner !=m)){
+            canWalk = straitWalk(currentWinner, p);
+        }else if((currentWinner.currentNode.type==NodeType.FLOOR) && (currentWinner == p)){
+            return true;
+        }  
+        
+        return canWalk;
+    }
+    
+
     
     public ArrayList<MeshPoint> getMesh(){
         return mesh;
