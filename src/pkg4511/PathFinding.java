@@ -63,7 +63,7 @@ public class PathFinding {
             }
         }
         //TODO:fix connections - looks like I am looping through a lot of nodes I shouldn't
-        //makeMeshPointConnections();
+        makeMeshPointConnections();
     }
     
     
@@ -79,9 +79,10 @@ public class PathFinding {
                     MeshPoint p = mesh.get(i);
                     if(straitWalk(m, mesh.get(i))){
                         System.out.println("Should be adding connections");
+                        System.out.println("M: (" + m.currentNode.x + ", " + m.currentNode.y + ")");
+                        System.out.println("P: (" + p.currentNode.x + ", " + p.currentNode.y + ")");
                         m.addOption(p.currentNode);
-                        p.addOption(m.currentNode);
-                        checked[i]=true;
+                        p.addOption(m.currentNode);                        
                     }
                 }
             }
@@ -97,13 +98,18 @@ public class PathFinding {
         int py = p.currentNode.y;
         float a = mx-px;
         float b = my-py;
+        if (a==0 && b==0){
+            return 0;
+        }
         float c = (float)Math.sqrt(a*a + b*b);
         return c;
     }
     
     //checks if there is a strait line walk from point m to point p
     private boolean straitWalk(MeshPoint m, MeshPoint p){
-        System.out.println("checking how often I am here");
+        //System.out.println("checking how often I am here");
+        //System.out.println("M: (" + m.currentNode.x + ", " + m.currentNode.y + ")");
+        //System.out.println("P: (" + p.currentNode.x + ", " + p.currentNode.y + ")");
         boolean canWalk = false;
         float c = distance(m,p);
         int mx = m.currentNode.x;
@@ -111,61 +117,70 @@ public class PathFinding {
         int px = p.currentNode.x;
         int py = p.currentNode.y;
         MeshPoint currentWinner = m;
+        options = new ArrayList();
         // <editor-fold defaultstate="collapsed" desc="Switch">
         switch (m.position){
             case("BR"):
-                options.add(new MeshOption(m.currentNode, floormap[mx-1][my]));
-                options.add(new MeshOption(m.currentNode, floormap[mx-1][my+1]));
-                options.add(new MeshOption(m.currentNode, floormap[mx+1][my]));
-               options.add(new MeshOption(m.currentNode, floormap[mx+1][my+1]));                
+                options.add(new MeshOption(floormap[mx-1][my],p.currentNode));
+                options.add(new MeshOption(floormap[mx-1][my+1],p.currentNode));
+                options.add(new MeshOption(floormap[mx+1][my],p.currentNode));
+               options.add(new MeshOption(floormap[mx+1][my+1],p.currentNode));   
             case("M1"):
-                options.add(new MeshOption(m.currentNode, floormap[mx+1][my]));
-                options.add(new MeshOption(m.currentNode, floormap[mx][my+1]));
-                options.add(new MeshOption(m.currentNode, floormap[mx+1][my+1]));
+                options.add(new MeshOption(floormap[mx+1][my],p.currentNode));
+                options.add(new MeshOption(floormap[mx][my+1],p.currentNode));
+                options.add(new MeshOption(floormap[mx+1][my+1],p.currentNode));
                 break;
             case("BL"):
-                options.add(new MeshOption(m.currentNode, floormap[mx-1][my]));
-                options.add(new MeshOption(m.currentNode, floormap[mx-1][my-1]));
-                options.add(new MeshOption(m.currentNode, floormap[mx][my+1]));
-                options.add(new MeshOption(m.currentNode, floormap[mx+1][my+1]));
+                options.add(new MeshOption(floormap[mx-1][my],p.currentNode));
+                options.add(new MeshOption(floormap[mx-1][my-1],p.currentNode));
+                options.add(new MeshOption(floormap[mx][my+1],p.currentNode));
+                options.add(new MeshOption(floormap[mx+1][my+1],p.currentNode));
             case("M2"):
-                options.add(new MeshOption(m.currentNode, floormap[mx+1][my]));
-                options.add(new MeshOption(m.currentNode, floormap[mx][my-1]));
-                options.add(new MeshOption(m.currentNode, floormap[mx+1][my-1]));
+                options.add(new MeshOption(floormap[mx+1][my],p.currentNode));
+                options.add(new MeshOption(floormap[mx][my-1],p.currentNode));
+                options.add(new MeshOption(floormap[mx+1][my-1],p.currentNode));
                 break;
             case("TL"):
-                options.add(new MeshOption(m.currentNode, floormap[mx+1][my]));
-                options.add(new MeshOption(m.currentNode, floormap[mx+1][my]));
-                options.add(new MeshOption(m.currentNode, floormap[mx][my+1]));
-                options.add(new MeshOption(m.currentNode, floormap[mx-1][my+1]));
+                options.add(new MeshOption(floormap[mx+1][my],p.currentNode));
+                options.add(new MeshOption(floormap[mx+1][my],p.currentNode));
+                options.add(new MeshOption(floormap[mx][my+1],p.currentNode));
+                options.add(new MeshOption(floormap[mx-1][my+1],p.currentNode));
             case("M4"):
-                options.add(new MeshOption(m.currentNode, floormap[mx-1][my]));
-                options.add(new MeshOption(m.currentNode, floormap[mx][my-1]));
-                options.add(new MeshOption(m.currentNode, floormap[mx-1][my-1]));
+                options.add(new MeshOption(floormap[mx-1][my],p.currentNode));
+                options.add(new MeshOption(floormap[mx][my-1],p.currentNode));
+                options.add(new MeshOption(floormap[mx-1][my-1],p.currentNode));
                 break;
             case("TR"):
-                options.add(new MeshOption(m.currentNode, floormap[mx][my-1]));
-                options.add(new MeshOption(m.currentNode, floormap[mx-1][my-1]));
-                options.add(new MeshOption(m.currentNode, floormap[mx+1][my]));
-                options.add(new MeshOption(m.currentNode, floormap[mx+1][my+1]));
+                options.add(new MeshOption(floormap[mx][my-1],p.currentNode));
+                options.add(new MeshOption(floormap[mx-1][my-1],p.currentNode));
+                options.add(new MeshOption(floormap[mx+1][my],p.currentNode));
+                options.add(new MeshOption(floormap[mx+1][my+1],p.currentNode));
             case("M3"):
-                options.add(new MeshOption(m.currentNode, floormap[mx-1][my]));
-                options.add(new MeshOption(m.currentNode, floormap[mx-1][my+1]));
-                options.add(new MeshOption(m.currentNode, floormap[mx][my+1]));
+                options.add(new MeshOption(floormap[mx-1][my],p.currentNode));
+                options.add(new MeshOption(floormap[mx-1][my+1],p.currentNode));
+                options.add(new MeshOption(floormap[mx][my+1],p.currentNode));
                 break;
             }
         //</editor-fold>
         Iterator<MeshOption> itr = options.iterator();
         while(itr.hasNext()){
             MeshOption mo = itr.next();
+            //System.out.println("MO: (" + mo.startPoint.x + ", " + mo.startPoint.y + ")");
             if(c>mo.getDistance()){
                 c = mo.getDistance();                
-                currentWinner = new MeshPoint(mo.endPoint, m.direction, m.position);
+                currentWinner = new MeshPoint(mo.startPoint, m.direction, m.position);
             }
         }
-        if((currentWinner.currentNode.type==NodeType.FLOOR) && (currentWinner != p || currentWinner !=m)){
+        if((currentWinner.currentNode.x==mx)&&(currentWinner.currentNode.y==my)){
+            return false;
+        }
+        if(currentWinner.currentNode.type!=NodeType.FLOOR){
+            return false;
+        }
+        if((currentWinner.currentNode.type==NodeType.FLOOR) &&
+                (!(currentWinner.currentNode.x==px)||!(currentWinner.currentNode.y==py))){
             canWalk = straitWalk(currentWinner, p);
-        }else if((currentWinner.currentNode.type==NodeType.FLOOR) && (currentWinner == p)){
+        }else if((currentWinner.currentNode.x==px)&&(currentWinner.currentNode.y==py)){
             return true;
         }  
         

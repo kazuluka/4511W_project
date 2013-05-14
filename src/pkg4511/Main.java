@@ -35,6 +35,7 @@ import java.awt.Insets;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
@@ -218,8 +219,17 @@ public class Main extends JPanel implements ActionListener {
             }
 
             g2d.setColor(new Color(236, 202, 97));//golden yellow - mesh lines
-            for(MeshOption o : pathFind.options){
-                g2d.drawLine(o.startPoint.x, o.startPoint.y, o.endPoint.x, o.endPoint.y);
+            //Iterator<MeshOption> itr = pathFind.options.iterator();
+            //MeshOption o;
+            //while(itr.hasNext()){
+            for(MeshPoint m : pathFind.mesh){
+                for(MeshOption o : m.options){
+                    System.out.println("Should be drawing lines");
+                    //o = itr.next();
+                    System.out.println("o.sp: ("+o.startPoint.x+", "+o.startPoint.y+")");
+                    System.out.println("o.ep: ("+o.endPoint.x+", "+o.endPoint.y+")");
+                    g2d.drawLine(o.startPoint.x, o.startPoint.y, o.endPoint.x, o.endPoint.y);
+                }
             }
            }
 
