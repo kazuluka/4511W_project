@@ -42,10 +42,11 @@ public class Main extends JPanel implements ActionListener {
     Random generator = new Random();
     public int pNodeCount = 0;
     public int CameraCount = 0;
+    Node[][] floormap = new Node[400][400]; // Contains unchanging floormap data. No cameras, covered, or "possible"
     Node[][] Nodes = new Node[400][400]; //the array where the loaded image is mapped
 //  Node[][] possibleNodes = new Node[400][400]; //these are possible nodes for camera placement
 
-  Node[][] cameras = new Node[400][400]; //array where cameras are placed
+//  Node[][] cameras = new Node[400][400]; //array where cameras are placed
   static private final String newline = "\n"; //Why?! --p
   Timer timer;
   public String wall = "wall";
@@ -218,16 +219,19 @@ public class Main extends JPanel implements ActionListener {
                     pxColor = bimage1.getRGB(x,y);
                     if(Integer.toHexString(pxColor).equals("ff000000")){ //This is wall
                         Nodes[x][y] = new Node(x,y, NodeType.WALL);
-
+                        floormap[x][y] =  new Node(x,y, NodeType.WALL);
                     }
                     if (Integer.toHexString(pxColor).equals("ffc0c0c0")) { //This is floor
                         Nodes[x][y] = new Node(x, y, NodeType.FLOOR);
+                        floormap[x][y] =  new Node(x,y, NodeType.FLOOR);
                     }
                     if (Integer.toHexString(pxColor).equals("ffffffff")) { //This is nothing
                         Nodes[x][y] = new Node(x, y, NodeType.NOTHING);
+                        floormap[x][y] =  new Node(x,y, NodeType.NOTHING);
                     }
                     if (Integer.toHexString(pxColor).equals("ff71b84a")) { //This is door - color is green
                         Nodes[x][y] = new Node(x, y, NodeType.DOOR);
+                        floormap[x][y] =  new Node(x,y, NodeType.DOOR);
                     }
                 }
             }
@@ -386,10 +390,11 @@ public class Main extends JPanel implements ActionListener {
         assert(xPos<img_w);
         assert(yPos>=0);
         assert(yPos<img_h);
-        if(possibleLocationsCalculated){
+//        if(possibleLocationsCalculated){
             Nodes[xPos][yPos].setType(NodeType.CAMERA);
+            Nodes[xPos][yPos].setOri(ori);
             calculateCoverage(xPos, yPos, ori, 5);
-        }
+//        }
     }
     
     private void placeRandomCamera(){
