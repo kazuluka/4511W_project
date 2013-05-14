@@ -33,6 +33,7 @@ import javax.swing.AbstractButton;
 import java.awt.Container;
 import java.awt.Insets;
 import java.awt.Dimension;
+import java.util.Scanner;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.*;
 
@@ -492,7 +493,7 @@ public class Main extends JPanel implements ActionListener {
         assert (yPos >= 0);
         assert (yPos < img_h);
 //        ArrayList<Coord> inclusiveList = 
-        for(int f = -1*fan; f<=fan; f++){
+        for(double f = -1.0*fan; f<=fan; f+=0.1){
            double orient = degToRad((oriDeg+f));
            double xSlope = Math.cos(orient);
            double ySlope = Math.sin(orient);
@@ -514,23 +515,39 @@ public class Main extends JPanel implements ActionListener {
         }
         //Initial pass completed. Let's fill in the holes:
         
-        //CELLULAR AUTONOMA SCHEME:
-        //If >3 Nodes surrounding this one are covered, this node is also covered.
-        //Continue until no changes are detected.
+
+        
+//        Scanner pauser = new Scanner(System.in);
+//        System.out.println("Initial pass made...");
+//        pauser.nextLine();
+
+    }
+    
+//    private void fleshOutCoverage(){
+//                //CELLULAR AUTONOMA SCHEME:
+//        //If >3 Nodes surrounding this one are covered, this node is also covered.
+//        //Continue until no changes are detected.
+//        
 //        boolean changesMade = false;
+//        int iter = 0;
 //        do{
+//          changesMade = false;//Doh. Forgot this... --p
 //          for(int y = 0; y < img_h; y++){
 //          for(int x = 0; x < img_w; x++){
 //            if(Nodes[x][y].type==NodeType.FLOOR){
-//                if(determineNodeNeighborCoverage(x,y) > 3){
+//                if(determineNodeNeighborCoverage(x,y) > 4){
+//                    System.out.printf("Node %d %d converted to Covered\n",x,y);
 //                    Nodes[x][y].setType(NodeType.COVERED);
 //                    changesMade = true;
 //                }
 //            }
 //          }
 //          }
+//            System.out.println("on iter" + iter++);
 //        }while(changesMade);
-    }
+//    }
+    
+    
     
     private int determineNodeNeighborCoverage(int xCent, int yCent){
         int neighborsCovered = 0; 
@@ -575,7 +592,7 @@ public class Main extends JPanel implements ActionListener {
     
     
     
-    private double degToRad(int a){
+    private double degToRad(double a){
         return (((double) a)/180.0) * Math.PI;
     }
 
@@ -643,7 +660,9 @@ public class Main extends JPanel implements ActionListener {
         }
 
     if ("Refresh".equals(e.getActionCommand())){
-            repaint();//Test to make sure stuff sticks around between 'frames'
+//            fleshOutCoverage();
+            repaint();
+//            repaint();//Test to make sure stuff sticks around between 'frames'
     }
     
   }
