@@ -806,7 +806,7 @@ public class Main extends JPanel implements ActionListener {
         runCameraPlacementInitializer = true;
         while(improveState()){
             repaint();
-        
+            
         }//Oh man, that's awesome
     }
     
