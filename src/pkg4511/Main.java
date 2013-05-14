@@ -724,11 +724,14 @@ public class Main extends JPanel implements ActionListener {
         System.out.printf("Number of cameras: %d\n", 
                 CameraPlacementEngine.extractCameras(Nodes).size());
         
-        CameraPlacementState newPlacement = CameraPlacementEngine.getImprovedState(Nodes, floormap);
         if(runCameraPlacementInitializer){
-            newPlacement.initializeQuick();
+            (new CameraPlacementState(new Node[0][0], null)).initializeQuick();//File under: things I'll burn in Hell for
             runCameraPlacementInitializer = false;
         }
+        
+        
+        CameraPlacementState newPlacement = CameraPlacementEngine.getImprovedState(Nodes, floormap);
+        
         
         
         //Check that info gotten back is not null (null means we're at the peak)
