@@ -23,7 +23,7 @@ public class MeshPointEvaluator {
     int[][] checkNodesM1 = {{1,1,1},{1,0,0},{1,0,0}};
     int[][] checkNodesM2 = {{1,1,1},{0,0,1},{0,0,1}};
     int[][] checkNodesM3 = {{1,0,0},{1,0,0},{1,1,1}};
-    int[][] checkNodesM4 = {{0,0,1},{0,0,1},{0,0,0}};
+    int[][] checkNodesM4 = {{0,0,1},{0,0,1},{1,1,1}};
     
     Node[][] toCheck = new Node[3][3];
     int[][] intToCheck = new int[3][3];
@@ -56,32 +56,47 @@ public class MeshPointEvaluator {
     public void meshPoint(){
         // <editor-fold defaultstate="collapsed" desc="Outside Corners">        
         if(Arrays.deepEquals(checkNodesTR, intToCheck)){
-            meshPoint = new MeshPoint(toCheck[2][0], checkNodesTR);
+            meshPoint = new MeshPoint(toCheck[0][2], checkNodesTR);
+            System.out.println("TR");
+            return;
         }
         if(Arrays.deepEquals(checkNodesTL, intToCheck)){
             meshPoint = new MeshPoint(toCheck[0][0], checkNodesTL);
+            System.out.println("TL");
+            return;
         }
         if(Arrays.deepEquals(checkNodesBL, intToCheck)){
-            meshPoint = new MeshPoint(toCheck[0][2], checkNodesBL);
-        }
-        
+            meshPoint = new MeshPoint(toCheck[2][0], checkNodesBL);
+            System.out.println("BL");
+            return;
+        }        
         if(Arrays.deepEquals(checkNodesBR, intToCheck)){
             meshPoint = new MeshPoint(toCheck[2][2], checkNodesBR);
+            System.out.println("BR");
+            return;
         }
         //</editor-fold>
         
         // <editor-fold defaultstate="collapsed" desc="Middle points">
         if(Arrays.deepEquals(checkNodesM1, intToCheck)){
-            meshPoint = new MeshPoint(toCheck[2][2], checkNodesM1);
+            meshPoint = new MeshPoint(toCheck[1][1], checkNodesM1);
+            System.out.println("M1");
+            return;
         }        
         if(Arrays.deepEquals(checkNodesM2, intToCheck)){
-            meshPoint = new MeshPoint(toCheck[2][2], checkNodesM2);
+            meshPoint = new MeshPoint(toCheck[1][1], checkNodesM2);
+            System.out.println("M2");
+            return;
         }     
         if(Arrays.deepEquals(checkNodesM3, intToCheck)){            
-            meshPoint = new MeshPoint(toCheck[2][2], checkNodesM3);
+            meshPoint = new MeshPoint(toCheck[1][1], checkNodesM3);
+            System.out.println("M3");
+            return;
         }     
         if(Arrays.deepEquals(checkNodesM4, intToCheck)){
-            meshPoint = new MeshPoint(toCheck[2][2], checkNodesM4);
+            meshPoint = new MeshPoint(toCheck[1][1], checkNodesM4);
+            System.out.println("M4");
+            return;
         }
         //</editor-fold>
     }
@@ -90,6 +105,7 @@ public class MeshPointEvaluator {
         if(meshPoint==null){
             return false;
         }
+        System.out.println("Adding Node: ("+meshPoint.currentNode.x+", "+meshPoint.currentNode.y+")");
         return true;
     }
     

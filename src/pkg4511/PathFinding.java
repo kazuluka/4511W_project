@@ -22,6 +22,7 @@ public class PathFinding {
     public void createMeshPoints(){
         Node[][] checkNodes  = new Node[3][3];
         MeshPointEvaluator test;
+        int count = 0;
         for(int i = 0; i< floormap.length-1; i++){
             for(int j = 0; j < floormap[i].length-1;j++){
                 
@@ -41,8 +42,6 @@ public class PathFinding {
                             }
                         }
                     }*/
-                    
-                    
                     checkNodes[0][0] = floormap[i-2][j-2];
                     checkNodes[1][0] = floormap[i-1][j-2];
                     checkNodes[2][0] = floormap[i][j-2];
@@ -54,6 +53,8 @@ public class PathFinding {
                     checkNodes[2][2] = floormap[i][j];
                     test = new MeshPointEvaluator(checkNodes); 
                     if(test.isMeshPointSet()){
+                        count++;                        
+                        System.out.println("Count: "+count);
                         mesh.add(test.getMeshPoint());
                     }                
                 }             
@@ -61,7 +62,7 @@ public class PathFinding {
         }
     }
     
-    public ArrayList<MeshPoint> getTravelPoints(){
+    public ArrayList<MeshPoint> getMesh(){
         return mesh;
     }
 }

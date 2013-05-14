@@ -49,7 +49,6 @@ public class Main extends JPanel implements ActionListener {
     Node[][] Nodes = new Node[400][400]; //the array where the loaded image is mapped
 //  Node[][] possibleNodes = new Node[400][400]; //these are possible nodes for camera placement
 //  Node[][] cameras = new Node[400][400]; //array where cameras are placed
-    Node[][] pathing = new Node[400][400];
     static private final String newline = "\n"; //Why?! --p
     Timer timer;
     public String wall = "wall";
@@ -80,6 +79,13 @@ public class Main extends JPanel implements ActionListener {
     Graphics g3d;
     boolean possibleLocationsCalculated = false; // Becomes true after Scan Nodes is run
 
+    //<editor-fold defaultstate="collapsed" desc="Path Variables">
+    Node[][] pathing = new Node[400][400];
+    ArrayList<MeshPoint> mesh = new ArrayList();
+    //</editor-fold>
+    
+    
+    
     public static void addComponentsToPane(Container pane) {
     }
 
@@ -755,6 +761,34 @@ public class Main extends JPanel implements ActionListener {
         }
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Path methods"> 
+    private void createPathMesh(){
+        PathFinding pathFinding = new PathFinding(Nodes);
+        pathFinding.createMeshPoints();
+        mesh = pathFinding.getMesh();
+        int x=0;
+        int y=0;
+        for(MeshPoint p: mesh){
+            x = p.currentNode.x;
+            y = p.currentNode.y;
+            Nodes[x][y].setType(NodeType.MESHPOINT);
+        }
+        System.out.println(mesh.size());
+    }    
+    
+    private void clearPaths() {
+        int x = 0;
+        int y = 0;
+        for(MeshPoint p: mesh){
+            x = p.currentNode.x;
+            y = p.currentNode.y;
+            if(Nodes[x][y].type==NodeType.MESH || Nodes[x][y].type==NodeType.MESHPOINT){
+                Nodes[x][y].setType(NodeType.FLOOR);
+            }
+        }
+    }
+    //</editor-fold>
+    
     public void actionPerformed(ActionEvent e) { //listener used for button calls, button presses will set off the if statement with the corresponding
         // action command
 
@@ -790,6 +824,7 @@ public class Main extends JPanel implements ActionListener {
             System.out.println("Clearing possible camera positions");
             clearPossibleCameraPositions();
             clearCameras();
+            clearPaths();
             repaint();
         }
 
@@ -809,8 +844,8 @@ public class Main extends JPanel implements ActionListener {
 
         if ("Pathing".equals(e.getActionCommand())) {
             System.out.println("Pathing: Setting up");
-            PathFinding pathFinding = new PathFinding(Nodes);
-            pathFinding.createMeshPoints();
+            createPathMesh();
+            repaint();
         }
 
     }
