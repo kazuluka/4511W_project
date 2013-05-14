@@ -175,7 +175,7 @@ public class CameraPlacementState {
     private CameraPlacementState improveSingleCamera(Node camera){
         //Motivation: We waste a lot of time calculating for cameras that are, for the moment, "complete"
         //So, let's narrow the focus of the algorithm to one camera, so we skip unnecessary calculations
-        //We'll be using the First-Choice algorithm to optimize this camera.
+        //We'll be using the Best-Choice algorithm to optimize this camera.
         this.setScore();
         //Generate a successor, test successor, keep highest-scoring successor
         CameraPlacementState best = this;
@@ -201,7 +201,7 @@ public class CameraPlacementState {
                 if(challenger.getScore() > best.getScore()){
                     best = challenger;
                     System.out.println("New best: "+best.getScore());
-                    return best;
+//                    return best;
                 }
             }
         
@@ -228,13 +228,13 @@ public class CameraPlacementState {
                 if(challenger.getScore() > best.getScore()){
                     best = challenger;
                     System.out.println("New best: "+best.getScore());
-                    return best;
+//                    return best;
                 }
             }
         if(best == this){
             return null;
         }
-        return best; //Should never run
+        return best;
         
     }
     
@@ -249,22 +249,18 @@ public class CameraPlacementState {
             System.out.println("Evaluating camera "+quick_onCamera+", wrapped around is "+quick_wrappedAround);
             Node currentCamera = cameraLocations.get(quick_onCamera);
             CameraPlacementState next = improveSingleCamera(currentCamera);
+            quick_onCamera++;
+            if(next == null && quick_onCamera>=cameraLocations.size() && quick_wrappedAround){
+                    return null;//We've run out of ways to improve.
+                }
+            if(quick_onCamera>=cameraLocations.size()){
+                quick_onCamera = 0;
+                quick_wrappedAround = true;
+            }
             if(next!=null){
                 quick_wrappedAround = false;//We've found something this time around,
                 //Which means we're not done yet.
                 return next;
-            }
-            else
-            {
-                //next is null. We can't improve that camera for now
-                quick_onCamera++;
-                if(quick_onCamera>=cameraLocations.size() && quick_wrappedAround){
-                    return null;//We've run out of ways to improve.
-                }
-                if(quick_onCamera>=cameraLocations.size()){
-                    quick_onCamera = 0;
-                    quick_wrappedAround = true;
-                }
             }
         }
     }
@@ -312,6 +308,16 @@ public class CameraPlacementState {
 
             }
             }
+            //Remove existing camera locations: Avoid destroying a camera!
+          for(Node existingCamera : cameraLocations){
+              for(int i = 0; i<possibilities.size(); i++){
+                  Node possible = possibilities.get(i);
+                  if(existingCamera.x == possible.x && existingCamera.y == possible.y){
+                      possibilities.remove(i);
+                      i--;//Keep in the same location in the list
+                  }
+              }
+          }
 //            run = false;
           return possibilities;
     }
