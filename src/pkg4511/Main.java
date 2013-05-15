@@ -69,6 +69,7 @@ public class Main extends JPanel implements ActionListener {
     JButton b5 = new JButton("Improve State");
     JButton b6 = new JButton("Pathing");
     JButton b7 = new JButton("Improve To Completion");
+    JButton b8 = new JButton("Generate Random Map");
     JFileChooser fc;
     File file = null;
     boolean run = false;
@@ -77,8 +78,10 @@ public class Main extends JPanel implements ActionListener {
     boolean initialScan = false;
     boolean runCameraPlacementInitializer = false;
     BufferedImage bimage1 = null;
+    CreateImage imgCreator = new CreateImage();
     Graphics g3d;
     boolean possibleLocationsCalculated = false; // Becomes true after Scan Nodes is run
+    boolean randomMapGenerated = false;
 
     //<editor-fold defaultstate="collapsed" desc="Path Variables">
     Node[][] pathing = new Node[400][400];
@@ -137,6 +140,12 @@ public class Main extends JPanel implements ActionListener {
         b7.setActionCommand("ImproveComplete");
         b7.setEnabled(true);
         add(b7);
+        b8.setVerticalTextPosition(AbstractButton.CENTER);
+        b8.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
+        b8.setMnemonic(KeyEvent.VK_D);
+        b8.setActionCommand("RandomMap");
+        b8.setEnabled(true);
+        add(b8);
         b1.addActionListener(this);
         b2.addActionListener(this);
         b3.addActionListener(this);
@@ -144,6 +153,7 @@ public class Main extends JPanel implements ActionListener {
         b5.addActionListener(this);
         b6.addActionListener(this);
         b7.addActionListener(this);
+        b8.addActionListener(this);
         b1.setBounds(10, 425, 80, 20);
         b2.setBounds(90, 425, 110, 20);
         b3.setBounds(200, 425, 110, 20);
@@ -151,6 +161,7 @@ public class Main extends JPanel implements ActionListener {
         b5.setBounds(135, 445, 125, 20);
         b6.setBounds(260, 445, 125, 20);
         b7.setBounds(10, 465, 160, 20);
+        b8.setBounds(170, 465, 180, 20);
         fc = new JFileChooser();
 
     }
@@ -174,6 +185,72 @@ public class Main extends JPanel implements ActionListener {
                 ioe.printStackTrace();
             }
 
+            g2d.drawImage(bimage1, null, 0, 0);
+
+            //Drawing 'possible nodes', if they exist:
+            for (int y = 0; y < img_h; y++) {
+                for (int x = 0; x < img_w; x++) {
+                    if (Nodes[x][y].type == NodeType.POSSIBLE) {
+                        g2d.drawLine(x, y, x, y);
+                    }
+                }
+            }
+
+
+            g2d.setColor(new Color(255, 0, 0));//Bright red dot for camera placement
+
+            for (int y = 0; y < img_h; y++) {
+                for (int x = 0; x < img_w; x++) {
+                    if (Nodes[x][y].type == NodeType.CAMERA) {
+                        g2d.drawLine(x, y, x, y);
+                    }
+                }
+            }
+
+            g2d.setColor(new Color(125, 30, 30));//darker red for coverage
+
+            for (int y = 0; y < img_h; y++) {
+                for (int x = 0; x < img_w; x++) {
+                    if (Nodes[x][y].type == NodeType.COVERED) {
+                        g2d.drawLine(x, y, x, y);
+                    }
+                }
+            }
+            
+            
+           if(pathFind!=null){
+            g2d.setColor(new Color(236, 202, 97));//golden yellow - mesh lines
+            //Iterator<MeshOption> itr = pathFind.options.iterator();
+            //MeshOption o;
+            //while(itr.hasNext()){
+            for(MeshPoint m : pathFind.mesh){
+                for(MeshOption o : m.options){
+                    System.out.println("Should be drawing lines");
+                    //o = itr.next();
+                    System.out.println("o.sp: ("+o.startPoint.x+", "+o.startPoint.y+")");
+                    System.out.println("o.ep: ("+o.endPoint.x+", "+o.endPoint.y+")");
+                    g2d.drawLine(o.startPoint.x, o.startPoint.y, o.endPoint.x, o.endPoint.y);
+                }
+            }
+            
+            g2d.setColor(new Color(251, 255, 0));//yellow - mesh point
+
+            for (int y = 0; y < img_h; y++) {
+                for (int x = 0; x < img_w; x++) {
+                    if (Nodes[x][y].type == NodeType.MESHPOINT) {
+                        g2d.drawLine(x, y, x, y);
+                    }
+                }
+            }
+           }
+
+
+
+            img_w = bimage1.getWidth();
+            img_h = bimage1.getHeight();
+        }
+        else if (randomMapGenerated) {
+            
             g2d.drawImage(bimage1, null, 0, 0);
 
             //Drawing 'possible nodes', if they exist:
@@ -823,6 +900,7 @@ public class Main extends JPanel implements ActionListener {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 file = fc.getSelectedFile();
                 initialScan = true;
+                randomMapGenerated = false;
                 repaint();
                 //This is where a real application would open the file.
                 System.out.println("Opening: " + file.getName() + "." + newline);
@@ -872,6 +950,15 @@ public class Main extends JPanel implements ActionListener {
 
             System.out.println("Pathing: Setting up");
             createPathMesh();
+            repaint();
+        }
+        
+        if ("RandomMap".equals(e.getActionCommand())) {
+            randomMapGenerated = true;
+            initialScan = true;
+            file = null;
+            System.out.println("Generating random floor map...");
+            bimage1 = imgCreator.generateRandomBMP();
             repaint();
         }
 
