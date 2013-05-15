@@ -225,11 +225,11 @@ public class Main extends JPanel implements ActionListener {
             //while(itr.hasNext()){
             for(MeshPoint m : pathFind.mesh){
                 for(MeshOption o : m.options){
-                    System.out.println("Should be drawing lines");
+                    //System.out.println("Should be drawing lines");
                     //o = itr.next();
-                    System.out.println("o.sp: ("+o.startPoint.x+", "+o.startPoint.y+")");
-                    System.out.println("o.ep: ("+o.endPoint.x+", "+o.endPoint.y+")");
-                    g2d.drawLine(o.startPoint.x, o.startPoint.y, o.endPoint.x, o.endPoint.y);
+                    //System.out.println("o.sp: ("+o.startPoint.x+", "+o.startPoint.y+")");
+                   // System.out.println("o.ep: ("+o.endPoint.x+", "+o.endPoint.y+")");
+                    g2d.drawLine(o.sNode.x, o.sNode.y, o.eNode.x, o.eNode.y);
                 }
             }
             
