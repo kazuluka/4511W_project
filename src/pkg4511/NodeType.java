@@ -10,5 +10,24 @@ package pkg4511;
  */
 public enum NodeType {
     //This defines what is contained in the Node on the map.
-    FLOOR, WALL, NOTHING, CAMERA, POSSIBLE, COVERED, UNASSIGNED
+    FLOOR (0), 
+    WALL (1), 
+    NOTHING (2), 
+    CAMERA (3), 
+    POSSIBLE (4), 
+    COVERED (5), 
+    UNASSIGNED (6), 
+    DOOR (7), 
+    MESH (8),
+    MESHPOINT (9);
+    
+    private final int index;
+    
+    NodeType(int index){
+        this.index = index;
+    }
+    
+    public int index() {
+        return index;
+    }
 }
