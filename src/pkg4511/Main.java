@@ -888,6 +888,7 @@ public class Main extends JPanel implements ActionListener {
                 Nodes[x][y].setType(NodeType.FLOOR);
             }
         }
+        pathFind=null;
     }
     //</editor-fold>
     
